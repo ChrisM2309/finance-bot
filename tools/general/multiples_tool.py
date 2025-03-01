@@ -7,13 +7,13 @@ import json
 chat = ChatOpenAI(model="gpt-4o-mini")
 
 #IMPORTAR LAS DEMAS TOOLS
-from tools.balance_general_tool import chain_balance
-from tools.bloquear_tool import chain_bloquear
-from tools.flujo_caja_tool import chain_flujo_caja
-from tools.preguntas_tool import chain_preguntas
-from tools.presupuesto_tool import chain_presupuesto
-from tools.registrar_tool import chain_registrar
-from tools.deudas_tool import chain_deudas
+from tools.abaco_platform.balance_general_tool import chain_balance
+from tools.abaco_platform.bloquear_tool import chain_bloquear
+from tools.abaco_platform.flujo_caja_tool import chain_flujo_caja
+from tools.general.preguntas_tool import chain_preguntas
+from tools.abaco_platform.presupuesto_tool import chain_presupuesto
+from tools.abaco_platform.registrar_tool import chain_registrar
+from tools.abaco_platform.deudas_tool import chain_deudas
 
 lista_herramientas = [
     "registrar_transaccion",
