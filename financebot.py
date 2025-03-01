@@ -19,31 +19,32 @@ import models.llm_config as llm_config
 agent_model  = llm_config.get_openai_llm()
 
 # TOOLS
-# REGISTRAR
-import tools.abaco_platform.registrar_tool as registrar_tool
-tool_registrar = registrar_tool.tool_registrar
-chain_registrar = registrar_tool.chain_registrar
-
-# CALCULAR FLUJO DE CAJA
-import tools.abaco_platform.flujo_caja_tool as flujo_caja_tool 
-tool_flujo_caja = flujo_caja_tool.tool_flujo_caja
-chain_flujo_caja = flujo_caja_tool.chain_flujo_caja
-
-#  PRESUPUESTO
-import tools.abaco_platform.presupuesto_tool as presupuesto_tool 
-tool_presupuesto = presupuesto_tool.tool_presupuesto
-chain_presupuesto = presupuesto_tool.chain_presupuesto
+#? Tools generales
 
 # PREGUNTAS FINANCIERAS 
 import tools.general.preguntas_tool as preguntas_tool
 tool_preguntas = preguntas_tool.tool_preguntas
 chain_preguntas = preguntas_tool.chain_preguntas
+# PROCESAR MULTIPLES TOOLS 
+import tools.general.multiples_tool as multiples_tool
+tool_multiples = multiples_tool.tool_multiples
 
+#* Tools de la plataforma de Abaco
+# REGISTRAR
+import tools.abaco_platform.registrar_tool as registrar_tool
+tool_registrar = registrar_tool.tool_registrar
+
+# CALCULAR FLUJO DE CAJA
+import tools.abaco_platform.flujo_caja_tool as flujo_caja_tool 
+tool_flujo_caja = flujo_caja_tool.tool_flujo_caja
+
+#  PRESUPUESTO
+import tools.abaco_platform.presupuesto_tool as presupuesto_tool 
+tool_presupuesto = presupuesto_tool.tool_presupuesto
 
 # BLOQUEAR PREGUNTAS NO FINANCIERAS
 import tools.abaco_platform.bloquear_tool as bloquear_tool
 tool_bloquear = bloquear_tool.tool_bloquear
-chain_bloquear = bloquear_tool.chain_bloquear
 
 # MANEJO DE DEUDAS
 import tools.abaco_platform.deudas_tool as deudas_tool 
@@ -52,10 +53,6 @@ tool_deudas = deudas_tool.tool_deudas
 # CALCULO BALANCE GENERAL 
 import tools.abaco_platform.balance_general_tool as balance_general_tool
 tool_balance = balance_general_tool.tool_balance
-
-# PROCESAR MULTIPLES TOOLS 
-import tools.general.multiples_tool as multiples_tool
-tool_multiples = multiples_tool.tool_multiples
 
 
 #! CONFIGURAR AL AGENTE 
