@@ -75,8 +75,8 @@ agente = initialize_agent(
     tools = tools,
     llm = agent_model,
     agent="conversational-react-description",
-    verbose=True,
-    max_iterations = 100,
+    #verbose=True,
+    max_iterations = 25,
     memory = memory
     )
 
