@@ -53,11 +53,6 @@ import tools.abaco_platform.presupuesto_tool as presupuesto_tool
 tool_presupuesto = presupuesto_tool.tool_presupuesto
 tools_abaco.append(tool_presupuesto)
 
-# BLOQUEAR PREGUNTAS NO FINANCIERAS
-import tools.abaco_platform.bloquear_tool as bloquear_tool
-tool_bloquear = bloquear_tool.tool_bloquear
-tools_abaco.append(tool_bloquear)
-
 # MANEJO DE DEUDAS
 import tools.abaco_platform.deudas_tool as deudas_tool 
 tool_deudas = deudas_tool.tool_deudas
@@ -80,8 +75,8 @@ agente = initialize_agent(
     tools = tools,
     llm = agent_model,
     agent="conversational-react-description",
-    #verbose=True,
-    max_iterations = 10,
+    verbose=True,
+    max_iterations = 100,
     memory = memory
     )
 

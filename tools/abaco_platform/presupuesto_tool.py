@@ -15,7 +15,7 @@ prompt_presupuesto = PromptTemplate(
 
     Texto: "{input}"
 
-    Devuelve el resultado en formato: "✅ Presupuesto de ${monto} para {categoria} configurado."
+    Devuelve el resultado en formato: "✅ Presupuesto de $(monto) para (categoria) configurado."
     """
 )
 
