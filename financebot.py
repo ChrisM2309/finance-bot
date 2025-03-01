@@ -1,27 +1,22 @@
-import os
-from openai import OpenAI as OpenAI
+from openai import OpenAI
 
 from langchain.chat_models import ChatOpenAI
 from langchain.agents import initialize_agent, Tool, load_tools
 from langchain.schema import HumanMessage, SystemMessage, AIMessage
-from langchain.llms import OpenAI as OpenAI
+from langchain.llms import OpenAI
 from langchain.memory import ConversationBufferMemory
 from langchain.chains import LLMChain, SimpleSequentialChain
 from langchain.prompts import PromptTemplate
 
 import json
 
-from dotenv import load_dotenv
-load_dotenv()
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+# Importar la memoria
+from memory.context import conversation_memory
+memory = conversation_memory
 
-os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
-client = OpenAI(
-    api_key = OPENAI_API_KEY
-)
-
-#ChatBot Type
-chat = ChatOpenAI(model="gpt-4o-mini")
+#IMPORTAR EL CHATBOT DE GPT 
+import models.llm_config as llm_config
+agent_model  = llm_config.get_openai_llm()
 
 # TOOLS
 # REGISTRAR
@@ -64,10 +59,6 @@ tool_multiples = multiples_tool.tool_multiples
 
 
 #! CONFIGURAR AL AGENTE 
-
-memory = ConversationBufferMemory(memory_key="chat_history")
-
-# Inicializar el agente
 # Lista de herramientas
 tools = [
     tool_registrar,
@@ -83,7 +74,7 @@ tools = [
 # Inicializar el agente
 agente = initialize_agent(
     tools = tools,
-    llm = chat,
+    llm = agent_model,
     agent="conversational-react-description",
     #verbose=True,
     max_iterations = 10,
