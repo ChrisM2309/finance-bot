@@ -32,9 +32,9 @@ import tools.general.preguntas_tool as preguntas_tool
 tool_preguntas = preguntas_tool.tool_preguntas
 tools_general.append(tool_preguntas)
 # PROCESAR MULTIPLES TOOLS 
-import tools.general.multiples_tool as multiples_tool
-tool_multiples = multiples_tool.tool_multiples
-tools_general.append(tool_multiples)
+#import tools.general.multiples_tool as multiples_tool
+#tool_multiples = multiples_tool.tool_multiples
+#tools_general.append(tool_multiples)
 
 #* Tools de la plataforma de Abaco
 tools_abaco = []
@@ -70,6 +70,9 @@ tools = tools_general
 if es_cliente_abaco:
     tools = tools + tools_abaco
 
+for tool in tools: 
+    print(tool.name)
+    
 # Inicializar el agente
 agente = initialize_agent(
     tools = tools,

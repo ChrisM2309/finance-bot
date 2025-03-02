@@ -1,9 +1,9 @@
 from langchain.prompts import PromptTemplate
 from langchain.chains import LLMChain
 from langchain.tools import Tool
-from langchain.chat_models import ChatOpenAI
 
-chat = ChatOpenAI(model="gpt-4o-mini")
+import models.llm_config as llm_config
+chat  = llm_config.get_openai_llm()
 
 # CALCULO DE FLUJO DE CAJA
 prompt_flujo_caja = PromptTemplate(

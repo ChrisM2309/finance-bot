@@ -4,7 +4,8 @@ from langchain.tools import Tool
 from langchain.chat_models import ChatOpenAI
 import json
 
-chat = ChatOpenAI(model="gpt-4o-mini")
+import models.llm_config as llm_config
+chat = llm_config.get_openai_llm()
 
 #IMPORTAR LAS DEMAS TOOLS
 from tools.abaco_platform.balance_general_tool import chain_balance
@@ -15,16 +16,16 @@ from tools.abaco_platform.presupuesto_tool import chain_presupuesto
 from tools.abaco_platform.registrar_tool import chain_registrar
 from tools.abaco_platform.deudas_tool import chain_deudas
 
-lista_herramientas = [
-    "registrar_transaccion",
-    "calcular_flujo_caja",
-    "configurar_presupuesto",
-    "responder_pregunta",
-    "manejar_deudas",
-    "calcular_balance_general",
-    "bloquear_pregunta"
-]
-
+# Lista de herramientas para el prompt 
+lista_herramientas = []
+# Tomar la lista de herramientas que tiene el agente actual
+import financebot 
+tools_in_financebot = financebot.tools
+for tool in tools_in_financebot:
+    print(tool.name, tool.description) # Imprimir el nombre y la descripción de cada herramienta
+    lista_herramientas.append(tool.name)
+    
+# Prompt para descomponer el texto
 prompt_descomponer = PromptTemplate(
     input_variables=["input", "lista_heramientas"],
     template="""
@@ -60,17 +61,16 @@ def procesar_multiples_tool(input_text):
         print(tareas)
     except json.JSONDecodeError as e:
         return f"Error al procesar las tareas: {str(e)}"
-
+    
     herramientas = {
-        "registrar_transaccion": lambda x: chain_registrar.run(input=x),
-        "calcular_flujo_caja": lambda x: chain_flujo_caja.run(input=x),
-        "configurar_presupuesto": lambda x: chain_presupuesto.run(input=x),
-        "responder_pregunta": lambda x: chain_preguntas.run(input=x),
-        "manejar_deudas": lambda x: chain_deudas.run(input=x),
-        "bloquear_pregunta": lambda x: chain_bloquear.run(input=x),
-        "calcular_balance_general" : lambda x : chain_balance.run(input=x)
-        # Agrega más herramientas según sea necesario
-    }
+        "registrar_transaccion": chain_registrar.run,
+        "calcular_flujo_caja": chain_flujo_caja.run,
+        "configurar_presupuesto": chain_presupuesto.run,
+        "responder_pregunta": chain_preguntas.run,
+        "calcular_balance_general": chain_balance.run,
+        "bloquear_cuenta": chain_bloquear.run,
+        "manejar_deudas": chain_deudas.run
+    }    
     resultados = []
     for tarea in tareas:
         tool_name = tarea["tool"]

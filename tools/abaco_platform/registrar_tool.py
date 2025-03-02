@@ -3,8 +3,9 @@ from langchain.chains import LLMChain
 from langchain.tools import Tool
 from langchain.chat_models import ChatOpenAI
 
-
-chat = ChatOpenAI(model="gpt-4o-mini")
+#IMPORTAR EL CHATBOT DE GPT 
+import models.llm_config as llm_config
+chat  = llm_config.get_openai_llm()
 
 # Crear una cadena (Chain) para registrar transacciones
 prompt_registrar = PromptTemplate(
