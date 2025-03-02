@@ -3,6 +3,9 @@ from langchain.chains import LLMChain
 from langchain.tools import Tool
 from langchain.chat_models import ChatOpenAI
 
+import sys, os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
+
 import models.llm_config as llm_config
 chat  = llm_config.get_openai_llm()
 
