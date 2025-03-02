@@ -30,7 +30,7 @@ text_splitter = RecursiveCharacterTextSplitter(
     chunk_overlap = 150
 )
 splits = text_splitter.split_documents(docs)
-print("LEN SPLIT", len(splits))
+#print("LEN SPLIT", len(splits))
 
 # 2. Embeddings
 embeddings = OpenAIEmbeddings(openai_api_key=os.getenv("OPENAI_API_KEY"))

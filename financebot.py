@@ -69,9 +69,6 @@ tools = tools_general
 if es_cliente_abaco:
     tools = tools + tools_abaco
 
-for tool in tools: 
-    print(tool.name)
-    
 # Inicializar el agente
 agente = initialize_agent(
     tools = tools,

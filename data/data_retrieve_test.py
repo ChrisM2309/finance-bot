@@ -21,7 +21,9 @@ retriever = abacoweb_vectorstore.as_retriever()
 retriever_qa = "Cual es el rol de la planificación financiera dinámica en un contexto de tasas de interés altas"
 
 retriever_docs = retriever.invoke(retriever_qa, k=3)
+''' 
 for doc in retriever_docs:
     print("SIGUIENTE DOCUMENTO")
     print(doc.page_content)
     print("\n")
+'''
