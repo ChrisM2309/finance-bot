@@ -1,6 +1,5 @@
 from openai import OpenAI
-
-from langchain.chat_models import ChatOpenAI
+import os
 from langchain.agents import initialize_agent, Tool, load_tools
 from langchain.schema import HumanMessage, SystemMessage, AIMessage
 from langchain.llms import OpenAI

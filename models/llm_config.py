@@ -2,18 +2,20 @@ import os
 from openai import OpenAI
 from langchain.llms import OpenAI
 from langchain.chat_models import ChatOpenAI
+from langchain_openai import ChatOpenAI
 
-
+#INICIAL 
 # Configurar API de OpenAI
 from dotenv import load_dotenv
 load_dotenv()
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+openai_api_key = os.getenv("OPENAI_API_KEY")
 
 # Inicializar el cliente de OpenAI
-os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
+os.environ["OPENAI_API_KEY"] = openai_api_key
 client = OpenAI(
-    api_key = OPENAI_API_KEY
+    api_key = openai_api_key
 )
+
 # Inicializar el modelo de OpenAI
 def get_openai_llm():
-    return  ChatOpenAI(model="gpt-4o-mini")
+    return ChatOpenAI(model="gpt-4o-mini")
