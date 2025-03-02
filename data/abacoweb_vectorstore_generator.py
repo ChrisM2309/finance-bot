@@ -27,7 +27,7 @@ docs = loader.load()
 # 2.Split documents into manageable fragments
 text_splitter = RecursiveCharacterTextSplitter(
     chunk_size = 800,
-    chunk_overlap = 150
+    chunk_overlap = 300
 )
 splits = text_splitter.split_documents(docs)
 #print("LEN SPLIT", len(splits))

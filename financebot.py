@@ -20,7 +20,7 @@ agent_model  = llm_config.get_openai_llm()
 
 # SI ES CLIENTE DE ABACO 
 # ESTO SERA MEJORADO LUEGO, PARA PROTOTIPO SERA BOOL 
-es_cliente_abaco = True
+es_cliente_abaco = False 
                    
 # TOOLS
 #? Tools generales
@@ -69,6 +69,11 @@ tools = tools_general
 if es_cliente_abaco:
     tools = tools + tools_abaco
 
+for tool in tools:
+    print("TOOL: ") 
+    print(tool.name)
+    print("\n")
+    
 # Inicializar el agente
 agente = initialize_agent(
     tools = tools,
