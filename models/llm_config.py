@@ -2,7 +2,7 @@ import os
 from openai import OpenAI
 from langchain_community.llms import OpenAI
 from langchain_community.chat_models import ChatOpenAI
-from langchain_openai import ChatOpenAI
+from langchain_openai import ChatOpenAI, OpenAI
 
 #INICIAL 
 # Configurar API de OpenAI
