@@ -4,7 +4,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '.
 from langchain.prompts import PromptTemplate
 from langchain.chains import LLMChain
 from langchain.tools import Tool
-from langchain.chat_models import ChatOpenAI
+from langchain_community.chat_models import ChatOpenAI
 import json
 
 import models.llm_config as llm_config
@@ -25,7 +25,7 @@ lista_herramientas = []
 from financebot import agent_tools 
 tools_in_financebot = agent_tools
 for tool in tools_in_financebot:
-    print(tool.name, tool.description) # Imprimir el nombre y la descripción de cada herramienta
+    #print(tool.name, tool.description) # Imprimir el nombre y la descripción de cada herramienta
     lista_herramientas.append(tool.name)
     
 # Prompt para descomponer el texto

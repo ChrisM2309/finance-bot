@@ -6,9 +6,9 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.prompts import PromptTemplate
 from langchain.chains import LLMChain, RetrievalQA
 from langchain.tools import Tool
-from langchain.chat_models import ChatOpenAI
-from langchain.vectorstores import FAISS
-from langchain.embeddings import OpenAIEmbeddings
+from langchain_community.chat_models import ChatOpenAI
+from langchain_community.vectorstores import FAISS
+from langchain_openai import OpenAIEmbeddings
 
 from langchain.retrievers import ContextualCompressionRetriever
 from langchain.retrievers.document_compressors import LLMChainExtractor
@@ -50,7 +50,7 @@ num_documents_compleja = 12
 # Funcion para determinar la complejidad de la pregunta
 def obtener_retriever_correcto(input_text):
     complejidad =  determinar_complejidad_chain.run(input=input_text)
-    print(f"Complejidad: {complejidad}" )
+    #print(f"Complejidad: {complejidad}" )
     if complejidad == "simple":
         retriever =  abacoweb_vectorstore.as_retriever(search_kwargs={"k": num_documents_simple})
         chain_type = "stuff"
@@ -128,8 +128,8 @@ def respuesta_abaco_data(input_text):
     # Usa RetrievalQA para obtener respuesta con información de Abaco
     result = retrieval_qa({"query": input_text})
     answer = result["result"]
-    print("RESULTADO DEL RETRIEVAL QA")
-    print("Answer:", answer)
+    #print("RESULTADO DEL RETRIEVAL QA")
+    #print("Answer:", answer)
     # Si no hay respuesta útil del vector store, usa el chain general
     answer = chain_preguntas.run(input=input_text, answer = answer)
     
