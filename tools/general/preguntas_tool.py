@@ -5,9 +5,12 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.prompts import PromptTemplate
 from langchain.chains import LLMChain, RetrievalQA
 from langchain.tools import Tool
-from langchain_community.chat_models import ChatOpenAI
-from langchain_community.vectorstores import FAISS
-from langchain_openai import OpenAIEmbeddings
+from langchain.chat_models import ChatOpenAI
+from langchain.vectorstores import FAISS
+from langchain.embeddings import OpenAIEmbeddings
+
+from langchain.vectorstores import Chroma
+
 
 #IMPORTAR EL CHATBOT DE GPT 
 import models.llm_config as llm_config
