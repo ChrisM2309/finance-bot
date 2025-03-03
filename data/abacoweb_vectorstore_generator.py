@@ -3,7 +3,6 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from langchain_community.document_loaders import DirectoryLoader, UnstructuredWordDocumentLoader
 from langchain_community.embeddings import SentenceTransformerEmbeddings, OpenAIEmbeddings
-from langchain_community.vectorstores import Chroma
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.vectorstores import FAISS
 

@@ -7,10 +7,7 @@ from langchain.chains import LLMChain, RetrievalQA
 from langchain.tools import Tool
 from langchain.chat_models import ChatOpenAI
 from langchain.vectorstores import FAISS
-from langchain.embeddings import OpenAIEmbeddings
-
-from langchain.vectorstores import Chroma
-
+from langchain_openai import OpenAIEmbeddings
 
 #IMPORTAR EL CHATBOT DE GPT 
 import models.llm_config as llm_config
