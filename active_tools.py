@@ -1,6 +1,6 @@
 # SI ES CLIENTE DE ABACO 
 # ESTO SERA MEJORADO LUEGO, PARA PROTOTIPO SERA BOOL 
-es_cliente_abaco = False 
+es_cliente_abaco = True 
                    
 # TOOLS
 #? Tools generales

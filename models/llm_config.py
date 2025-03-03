@@ -1,7 +1,7 @@
 import os
 from openai import OpenAI
-from langchain.llms import OpenAI
-from langchain.chat_models import ChatOpenAI
+from langchain_community.llms import OpenAI
+from langchain_community.chat_models import ChatOpenAI
 from langchain_openai import ChatOpenAI
 
 #INICIAL 

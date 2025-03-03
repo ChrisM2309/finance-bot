@@ -1,13 +1,11 @@
 from openai import OpenAI
 import os
-from langchain.agents import initialize_agent, Tool, load_tools
+from langchain.agents import initialize_agent
 from langchain.schema import HumanMessage, SystemMessage, AIMessage
-from langchain.llms import OpenAI
+from langchain_community.llms import OpenAI
 from langchain.memory import ConversationBufferMemory
 from langchain.chains import LLMChain, SimpleSequentialChain
 from langchain.prompts import PromptTemplate
-
-import json
 
 # Importar la memoria
 from memory.context import conversation_memory
