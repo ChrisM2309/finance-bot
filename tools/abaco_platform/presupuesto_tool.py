@@ -4,7 +4,12 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '.
 from langchain.prompts import PromptTemplate
 from langchain.chains import LLMChain
 from langchain.tools import Tool
+#
+# Importar memoria
+from memory.context import get_conversation_memory
+memory = get_conversation_memory()
 
+# Importar modelo
 import models.llm_config as llm_config
 chat  = llm_config.get_openai_llm()
 
@@ -21,10 +26,12 @@ prompt_presupuesto = PromptTemplate(
     """
 )
 
-chain_presupuesto = LLMChain(llm=chat, prompt=prompt_presupuesto)
+chain_presupuesto = LLMChain(llm=chat, prompt=prompt_presupuesto, memory = memory)
 
 tool_presupuesto = Tool(
     name="configurar_presupuesto",
     func= lambda x: chain_presupuesto.run(input=x),
     description="Configura un presupuesto para una categoría."
 )
+
+print("Presupuesto tool cargado")

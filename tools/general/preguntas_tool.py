@@ -14,6 +14,10 @@ from langchain.retrievers.document_compressors import LLMChainExtractor
 import models.llm_config as llm_config
 chat  = llm_config.get_openai_llm()
 
+# Importar memoria 
+from memory.context import get_conversation_memory
+memory = get_conversation_memory()
+
 #CONECTAR CON EL VECTOR STORE
 embeddings = OpenAIEmbeddings(openai_api_key= os.getenv("OPENAI_API_KEY"))
 # VECTOR STORE LOCAL Y CARGADO 
@@ -89,7 +93,7 @@ prompt_preguntas = PromptTemplate(
     Indica donde tomas la informacion (Abaco o informacion general)
     """
 )
-chain_preguntas = LLMChain(llm=chat, prompt=prompt_preguntas)
+chain_preguntas = LLMChain(llm=chat, prompt=prompt_preguntas, memory = memory)
 
 # Chain para formatear la respuesta
 format_answer_prompt = PromptTemplate(
@@ -116,7 +120,7 @@ format_answer_prompt = PromptTemplate(
 
     '''
     )
-format_answer_chain = LLMChain(llm = chat, prompt = format_answer_prompt)
+format_answer_chain = LLMChain(llm = chat, prompt = format_answer_prompt, memory = memory)
 
 # Funcion para generar respuesta a preguntas financieras
 def respuesta_abaco_data(input_text):
@@ -139,7 +143,7 @@ tool_preguntas = Tool(
     func= respuesta_abaco_data,
     description="Responder preguntas relacionadas a finanzas, dinero, manejo del negocio o similares"
 )
-
+print("Preguntas tool cargado")
 # TESTEO SI FUNCIONA 
 
 # test_questions = [

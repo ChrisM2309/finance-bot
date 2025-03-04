@@ -110,6 +110,6 @@ tool_multiples = Tool(
     func=procesar_multiples_tool,
     description="Procesa un mensaje con múltiples instrucciones y ejecuta las herramientas en orden."
 )
-
+print("Multiples tool cargado")
 # Probar la función
 #print(procesar_multiples_tool(input_text="Registra un ingreso de $100 en ventas y calcula el flujo de caja con ingresos de $500 y gastos de $300"))

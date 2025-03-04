@@ -8,8 +8,11 @@ from langchain.tools import Tool
 import models.llm_config as llm_config
 chat  = llm_config.get_openai_llm()
 
-#Chain para manejo de deudas
+# Memory
+from memory.context import get_conversation_memory
+memory = get_conversation_memory()
 
+#Chain para manejo de deudas
 #Prompt de deudas
 prompt_deudas = PromptTemplate(
     input_variables=["input"],
@@ -33,12 +36,13 @@ prompt_deudas = PromptTemplate(
     """
 )
 def manejar_deudas_tool(input_text):
-    return chain_deudas.run(input=input_text)\
+    return chain_deudas.run(input=input_text)
 
 #chain de deudas
-chain_deudas = LLMChain(llm=chat, prompt=prompt_deudas)
+chain_deudas = LLMChain(llm=chat, prompt=prompt_deudas, memory=memory)
 tool_deudas = Tool(
     name = "manejar_deudas",
     func = manejar_deudas_tool,
     description = "Sirve para manejar deudas. Puede agregar, pagar o consultar deudas."
 )
+print("Deudas tool cargado")

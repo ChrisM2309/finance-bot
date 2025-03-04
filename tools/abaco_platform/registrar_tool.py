@@ -5,6 +5,10 @@ from langchain.prompts import PromptTemplate
 from langchain.chains import LLMChain
 from langchain.tools import Tool
 
+# Importar memoria 
+from memory.context import get_conversation_memory
+memory = get_conversation_memory()
+
 #IMPORTAR EL CHATBOT DE GPT 
 import models.llm_config as llm_config
 chat  = llm_config.get_openai_llm()
@@ -25,9 +29,11 @@ prompt_registrar = PromptTemplate(
     """
 )
 
-chain_registrar = LLMChain(llm=chat, prompt=prompt_registrar)
+chain_registrar = LLMChain(llm=chat, prompt=prompt_registrar, memory=memory)
 
 tool_registrar = Tool(
     name="registrar_transaccion",
     func=lambda x: chain_registrar.run(input=x),
     description="Sirve para registrar un ingreso o gasto con tipo (Ingreso/Gasto), monto (número), categoria (texto) y descripcion (texto) (opcional).")
+
+print("Registrar tool cargado")

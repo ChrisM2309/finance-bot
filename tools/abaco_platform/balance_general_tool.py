@@ -8,6 +8,10 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '.
 import models.llm_config as llm_config
 chat  = llm_config.get_openai_llm()
 
+# Importar memoria 
+import memory.context as context
+memory = context.get_conversation_memory()
+
 #Balance general
 prompt_balance	= PromptTemplate(
     input_variables=["input"],
@@ -26,10 +30,12 @@ prompt_balance	= PromptTemplate(
     """
 )
 
-chain_balance = LLMChain(llm = chat, prompt = prompt_balance)
+# Crear chain para balance general
+chain_balance = LLMChain(llm = chat, prompt = prompt_balance, memory = memory)
 
 tool_balance = Tool(
     name = "balance_general",
     func = lambda x: chain_balance.run(input = x),
     description = "Calcula el balance general de ingresos y gastos."
 )
+print("Balance general tool cargado")
