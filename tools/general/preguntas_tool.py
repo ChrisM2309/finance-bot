@@ -40,8 +40,8 @@ determinar_complejidad_prompt = PromptTemplate(
 )
 determinar_complejidad_chain = LLMChain(llm=chat, prompt=determinar_complejidad_prompt)
 # Amount of documents segun complejidad
-num_documents_simple = 3
-num_documents_moderada = 5
+num_documents_simple = 5
+num_documents_moderada = 8
 num_documents_compleja = 12
 
 # Funcion para determinar la complejidad de la pregunta
