@@ -6,9 +6,14 @@ from langchain.chains import LLMChain, RetrievalQA
 from langchain.tools import Tool
 from langchain_community.vectorstores import FAISS
 from langchain_community.embeddings import OpenAIEmbeddings
-
-from langchain.retrievers import ContextualCompressionRetriever
+from langchain.retrievers import ContextualCompressionRetriever, MultiQueryRetriever
 from langchain.retrievers.document_compressors import LLMChainExtractor
+
+
+# Cargar variables de entorno
+from dotenv import load_dotenv, find_dotenv
+load_dotenv(find_dotenv())
+
 
 #IMPORTAR EL CHATBOT DE GPT 
 import models.llm_config as llm_config
@@ -19,15 +24,13 @@ from memory.context import get_conversation_memory
 memory = get_conversation_memory()
 
 #CONECTAR CON EL VECTOR STORE
-embeddings = OpenAIEmbeddings(openai_api_key= os.getenv("OPENAI_API_KEY"))
-# VECTOR STORE LOCAL Y CARGADO 
-abacoweb_vectorstore = FAISS.load_local(
-    folder_path="./data/db/faiss",
-    embeddings=embeddings,
-    allow_dangerous_deserialization=True
-)
-#CREAR EL RETRIEVER ADECUADO DE ABACOWEB_VECTORSTORE
-
+from data.vector_store_getter import get_vectorstore
+try:
+    abacoweb_vectorstore = get_vectorstore()
+except FileNotFoundError as e:
+    print(f"Error: {e}. Asegúrate de ejecutar abacoweb_vectorstore_generator.py primero.")
+    abacoweb_vectorstore = None
+    
 #CHAIN PARA DETERMINAR LA COMPLEJIDAD DE LA PREGUNTA
 determinar_complejidad_prompt = PromptTemplate(
     input_variables=["input"],  
@@ -51,26 +54,49 @@ num_documents_compleja = 12
 # Funcion para determinar la complejidad de la pregunta
 def obtener_retriever_correcto(input_text):
     complejidad =  determinar_complejidad_chain.run(input=input_text)
+    # ASGINAR CANTIDAD DE DOCUMENTOS y CHAIN TYPE SEGUN COMPLEJIDAD
+    # Crear base_retriever segun la complejidad
     print(f"Complejidad: {complejidad}" )
     if complejidad == "simple":
-        retriever =  abacoweb_vectorstore.as_retriever(search_kwargs={"k": num_documents_simple})
+        base_retriever =  abacoweb_vectorstore.as_retriever(search_kwargs={"k": num_documents_simple})
         chain_type = "stuff"
     elif complejidad == "moderada":
-        b_retriever = abacoweb_vectorstore.as_retriever(search_kwargs={"k": num_documents_moderada})
-        compressor = LLMChainExtractor.from_llm(llm=chat)
-        retriever = ContextualCompressionRetriever(
-            base_compressor = compressor,
-            base_retriever = b_retriever
-        )
+        base_retriever = abacoweb_vectorstore.as_retriever(search_kwargs={"k": num_documents_moderada})
         chain_type = "stuff"
     else: #compleja
-        retriever =  abacoweb_vectorstore.as_retriever(search_kwargs={"k": num_documents_compleja})
+        base_retriever =  abacoweb_vectorstore.as_retriever(search_kwargs={"k": num_documents_compleja})
         chain_type = "map_reduce" 
+    
+    # Pasar los retriever al multi query retriever
+    # CREAR MULTI RETRIEVER
+    # Multi retriever toma base retriever
+    multi_retriever = MultiQueryRetriever(
+        retriever = base_retriever,
+        llm = chat, 
+        prompt = PromptTemplate(
+            input_variables=["input"],
+            template=
+            """
+            Genera 3 variaciones de esta pregunta para buscar temas similares y palabras relacionadas
+            Texto: "{input}"
+            Devuelve las 3 variaciones de la pregunta en una lista, por ejemplo: 
+            ["pregunta orginal (input)", "variacion 1", "variacion 2", "variacion 3"]
+            """
+        )
+    )
+    # Pasar al Compression Retriever
+    # Compressor retriever toma multi retriever
+    compressor = LLMChainExtractor.from_llm(llm=chat)
+    compression_retriever = ContextualCompressionRetriever(
+        base_compressor = compressor,
+        base_retriever = multi_retriever
+    )
     # Configura el RetrievalQA para usar el vector store
+    #
     return RetrievalQA.from_chain_type(
     llm=chat,
     chain_type= chain_type,
-    retriever= retriever,
+    retriever= compression_retriever,
     return_source_documents=True
     )
 
@@ -120,6 +146,7 @@ format_answer_prompt = PromptTemplate(
 
     '''
     )
+
 format_answer_chain = LLMChain(llm = chat, prompt = format_answer_prompt, memory = memory)
 
 # Funcion para generar respuesta a preguntas financieras
@@ -141,18 +168,20 @@ def respuesta_abaco_data(input_text):
 tool_preguntas = Tool(
     name="responder_preguntas_financieras",
     func= respuesta_abaco_data,
-    description="Responder preguntas relacionadas a finanzas, dinero, manejo del negocio o similares"
+    description="Responder preguntas relacionadas a finanzas, dinero, manejo del negocio y similares"
 )
 print("Preguntas tool cargado")
 # TESTEO SI FUNCIONA 
 
+# Testeo si funciona 
 # test_questions = [
-#         #"¿Qué es el flujo de caja?",  # Simple
-#         #"¿Cómo puedo calcular el flujo de caja de mi negocio?",  # Moderada
-#     ]
+#     "¿Qué es el flujo de caja?",  # Simple
+#     "¿Cómo puedo calcular el flujo de caja de mi negocio?",  # Moderada
+# ]
 # for question in test_questions:
-#         print("\nPregunta:", question)
-#         print(tool_preguntas(question))
+#     print("\nPregunta:", question)
+#     print(tool_preguntas(question))
+    
 # print("\ntest 2")
 # text2 = "Cual es el rol de la planificación financiera dinámica en el contexto de tasas de interés altas?"
 # print(text2)

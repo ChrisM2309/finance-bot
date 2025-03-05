@@ -1,6 +1,7 @@
 import sys, os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
+from pathlib import Path
 from langchain_community.document_loaders import DirectoryLoader, UnstructuredWordDocumentLoader
 from langchain_community.embeddings import SentenceTransformerEmbeddings
 from langchain_openai import OpenAI, OpenAIEmbeddings
@@ -10,11 +11,24 @@ from langchain_community.vectorstores import FAISS
 
 import os, dotenv
 from dotenv import load_dotenv, find_dotenv
+load_dotenv(find_dotenv())
 import openai
 
 import models.llm_config as llm_config
 chat = llm_config.get_openai_llm()
 
+# Configurar PATH
+# Definir la ruta absoluta a la raíz del proyecto
+from pathlib import Path
+BASE_DIR = Path(__file__).resolve().parent.parent  # FinanceBot/
+DATA_DIR = BASE_DIR / "data" / "abaco_web"
+PERSIST_DIR = BASE_DIR / "data" / "db" / "faiss"
+persist_directory = str(PERSIST_DIR).strip()
+
+
+# Verificar si la carpeta existe
+if not DATA_DIR.exists():
+    raise FileNotFoundError(f"La carpeta '{DATA_DIR}' no existe. Asegúrate de que contenga archivos .docx.")
 
 # 1. Subir documentos
 loader = DirectoryLoader(
@@ -27,7 +41,7 @@ docs = loader.load()
 
 # CHUNCK SIZE
 chunk_size = 400
-chunk_overlap = (0.33 * chunk_size)//1
+chunk_overlap = int((0.4 * chunk_size)//1)
 # 2.Split documents into manageable fragments
 text_splitter = RecursiveCharacterTextSplitter(
     chunk_size = chunk_size,
@@ -44,7 +58,6 @@ print("CHUNK OVERLAP", chunk_overlap)
 embeddings = OpenAIEmbeddings(openai_api_key=os.getenv("OPENAI_API_KEY"))
 
 # 3. GUARDAR EN VECTOR STORE
-persist_directory = "./data/db/faiss"
 
 abacoweb_vectorstore = FAISS.from_documents(
     documents=splits,
@@ -53,14 +66,10 @@ abacoweb_vectorstore = FAISS.from_documents(
 
 abacoweb_vectorstore.save_local(persist_directory)
 print("Vector store guardado en: ", persist_directory)
-if os.path.exists(persist_directory):
-    vectorstore = FAISS.load_local(
-        folder_path=persist_directory,
-        embeddings=embeddings,
-        allow_dangerous_deserialization=True  # Habilitar deserialización peligrosa
-    )
-print("Vector store cargado desde: ", persist_directory)
-#vectorstore = FAISS.load_local(persist_directory)
+
+
+
+#vectorstore  FAISS.load_local(persist_directory)
 
 ''' 4. Retrieval QA 
 retriever = abacoweb_vectorstore.as_retriever()
