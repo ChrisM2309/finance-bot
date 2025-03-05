@@ -47,9 +47,9 @@ determinar_complejidad_prompt = PromptTemplate(
 determinar_complejidad_chain = LLMChain(llm=chat, prompt=determinar_complejidad_prompt)
 
 # Cantidad de documentos según complejidad
-num_documents_simple = 3
-num_documents_moderada = 5
-num_documents_compleja = 8
+num_documents_simple = 2
+num_documents_moderada = 4
+num_documents_compleja = 5
 
 # Función para obtener el retriever correcto
 def obtener_retriever_correcto(input_text):
@@ -62,6 +62,12 @@ def obtener_retriever_correcto(input_text):
     if complejidad == "simple":
         base_retriever = abacoweb_vectorstore.as_retriever(search_kwargs={"k": num_documents_simple})
         chain_type = "stuff"
+        return RetrievalQA.from_chain_type(
+            llm=chat,
+            chain_type=chain_type,
+            retriever=base_retriever,
+            return_source_documents=True
+        )
     elif complejidad == "moderada":
         base_retriever = abacoweb_vectorstore.as_retriever(search_kwargs={"k": num_documents_moderada})
         chain_type = "stuff"
@@ -78,7 +84,7 @@ def obtener_retriever_correcto(input_text):
             Incluye:
             1. Una reformulación directa como pregunta.
             2. Una pregunta relacionada con conceptos financieros generales.
-            3. Dos pregunta relacionadas a servicios o estrategias de Abaco para PYMES.
+            3. Una pregunta relacionadas a servicios o estrategias de Abaco para PYMES.
             4. Una pregunta relacionado a los conceptos clave de la pregunta original.
             Devuelve las variaciones en una lista, por ejemplo:
             ["¿Qué es el flujo de caja?", "¿Por qué es importante el flujo de caja en finanzas?", "¿Cómo apoya Abaco a las PYMES con el flujo de caja?"]
