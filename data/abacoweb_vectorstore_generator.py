@@ -40,7 +40,7 @@ loader = DirectoryLoader(
 docs = loader.load()
 
 # CHUNCK SIZE
-chunk_size = 400
+chunk_size = 1000
 chunk_overlap = int((0.4 * chunk_size)//1)
 # 2.Split documents into manageable fragments
 text_splitter = RecursiveCharacterTextSplitter(
