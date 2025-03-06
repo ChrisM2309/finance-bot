@@ -14,15 +14,24 @@ DATA_DIR = BASE_DIR / "data" / "abaco_web"
 PERSIST_DIR = BASE_DIR / "data" / "db" / "faiss"
 persist_directory = str(PERSIST_DIR).strip()
 
-embeddings = OpenAIEmbeddings(openai_api_key=os.getenv("OPENAI_API_KEY"))
+_vector_store_instance = None
 
-if os.path.exists(persist_directory):
-    vectorstore = FAISS.load_local(
-        folder_path=persist_directory,
-        embeddings=embeddings,
-        allow_dangerous_deserialization=True  # Habilitar deserialización peligrosa
-    )
-    print("Vector store cargado desde y existe: ", persist_directory)
 
 def get_vectorstore():
-    return vectorstore
+    global _vector_store_instance
+    if _vector_store_instance is None:
+        try:
+            embeddings = OpenAIEmbeddings(openai_api_key=os.getenv("OPENAI_API_KEY"))
+            if os.path.exists(persist_directory):
+                _vector_store_instance = FAISS.load_local(
+                    folder_path=persist_directory,
+                    embeddings=embeddings,
+                    allow_dangerous_deserialization=True  # Habilitar deserialización peligrosa
+                )
+                print("Vector store cargado desde y existe: ", persist_directory)
+            else: 
+                raise FileNotFoundError(f"El directorio no existe, ejecutar generator primero")
+        except Exception as e:
+            print("Error al cargar: {e}")
+            raise
+    return _vector_store_instance
