@@ -41,7 +41,7 @@ determinar_complejidad_prompt = PromptTemplate(
     Clasifícala como:
     - "simple": preguntas cortas y directas
     - "moderada": preguntas que requieren análisis, explicaciones o ejemplos
-    - "compleja": preguntas que requieren análisis profundo, pasos múltiples o explicaciones detalladas
+    - "compleja": preguntas que requieren análisis profundo, pasos múltiples o explicaciones detalladas. Preguntas que pidan ordenar opciones, hacer valoraciones, analisis o comparaciones
     Devuelve solo la clasificación: simple, moderada o compleja
     """
 )
@@ -49,9 +49,9 @@ determinar_complejidad_chain = LLMChain(llm=chat, prompt=determinar_complejidad_
 
 # CONFIGURACION DE RETRIEVER
 RETRIEVER_CONFIG = {
-    "simple": {"k": 2, "chain_type": "stuff", "use_multi_query": False},
-    "moderada": {"k": 4, "chain_type": "stuff", "use_multi_query": True},
-    "compleja": {"k": 5, "chain_type": "map_reduce", "use_multi_query": True}
+    "simple": {"k": 3, "chain_type": "stuff", "use_multi_query": False},
+    "moderada": {"k": 4, "chain_type": "stuff", "use_multi_query": False},
+    "compleja": {"k": 2, "chain_type": "map_reduce", "use_multi_query": True}
 }
 
 #PROMPT PARA EL MULTI_RETRIEVER
@@ -63,7 +63,7 @@ multi_retriever_prompt = PromptTemplate(
         "{question}"
         Incluye:
         1. Una reformulación directa como pregunta.
-        2. Una pregunta relacionada con conceptos financieros generales.
+        2. Una pregunta relacionada con los conceptos mas importantes que estan en el texto.
         3. Una pregunta relacionadas a servicios o estrategias de Abaco para PYMES.
         4. Una pregunta relacionado a los conceptos clave de la pregunta original.
         Devuelve las variaciones en una lista, por ejemplo:
