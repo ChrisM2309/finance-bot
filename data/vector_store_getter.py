@@ -3,7 +3,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from langchain_community.vectorstores import FAISS
 from langchain_openai import OpenAI, OpenAIEmbeddings
-from langchain_community.embeddings import OpenAIEmbeddings
+#from langchain_community.embeddings import OpenAIEmbeddings
 
 from dotenv import load_dotenv, find_dotenv
 load_dotenv(find_dotenv())

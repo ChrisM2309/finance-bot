@@ -15,7 +15,13 @@ os.environ["OPENAI_API_KEY"] = openai_api_key
 client = OpenAI(
     api_key = openai_api_key
 )
+FINE_TUNED_MODEL = "ft:gpt-4o-mini-2024-07-18:competitivecodingclub::B8pU9GKP"
 
 # Inicializar el modelo de OpenAI
 def get_openai_llm():
-    return ChatOpenAI(model="gpt-4o-mini")
+    return ChatOpenAI(
+        model= FINE_TUNED_MODEL,
+        api_key = openai_api_key
+    )
+if __name__ == "__main__":
+    print("Completed llm_config")
