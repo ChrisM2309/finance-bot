@@ -29,10 +29,11 @@ agent_tools.append(tool_multiples)
 agente = initialize_agent(
     tools = agent_tools,
     llm = agent_model,
-    agent="conversational-react-description",
+    agent="chat-conversational-react-description",
     #verbose=True,
-    max_iterations = 25,
-    memory = memory
+    max_iterations = 10,
+    memory = memory,
+    handle_parsing_errors=True  # Maneja errores de parseo
     )
 
 def get_agent():

@@ -3,7 +3,7 @@ import sys
 import os
 import json 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
-
+sys.stdout.reconfigure(encoding='utf-8')
 from langchain.prompts import PromptTemplate
 from langchain.chains import LLMChain, RetrievalQA
 from langchain.tools import Tool
@@ -19,6 +19,8 @@ load_dotenv(find_dotenv())
 # Importar el chatbot y memoria
 import models.llm_config as llm_config
 chat = llm_config.get_openai_llm()
+get_chat_completion = llm_config.get_chat_completion
+
 from memory.context import get_conversation_memory
 memory = get_conversation_memory()
 
@@ -49,9 +51,9 @@ determinar_complejidad_chain = LLMChain(llm=chat, prompt=determinar_complejidad_
 
 # CONFIGURACION DE RETRIEVER
 RETRIEVER_CONFIG = {
-    "simple": {"k": 3, "chain_type": "stuff", "use_multi_query": False},
-    "moderada": {"k": 4, "chain_type": "stuff", "use_multi_query": False},
-    "compleja": {"k": 2, "chain_type": "map_reduce", "use_multi_query": True}
+    "simple": {"k": 2, "chain_type": "stuff", "use_multi_query": False},
+    "moderada": {"k": 5, "chain_type": "map_reduce", "use_multi_query": False},
+    "compleja": {"k": 3, "chain_type": "map_reduce", "use_multi_query": True}
 }
 
 #PROMPT PARA EL MULTI_RETRIEVER
@@ -106,43 +108,6 @@ def obtener_retriever_correcto(input_text):
         return_source_documents=True
     )
 
-# Prompt para respuesta general (respaldo)
-prompt_preguntas = PromptTemplate(
-    input_variables=["input"],
-    template="""
-    ERES UN ASESOR FINANCIERO EXPERTO
-    Responde la siguiente pregunta financiera de manera clara y sencilla:
-    "{input}"
-    """
-)
-chain_preguntas = LLMChain(llm=chat, prompt=prompt_preguntas, memory=memory)
-
-# Chain para formatear la respuesta
-format_answer_prompt = PromptTemplate(
-    input_variables=["input", "answer_ia", "answer_qa"],
-    template='''
-    RESPONDE SIGUIENDO ESTA PLANTILLA: 
-    
-    **Saludo:**
-    ¡Hola! Me alegra ayudarte con tu consulta financiera: "{input}"
-
-    **Explicación de conceptos clave:**
-    A continuación, te explico los conceptos fundamentales relacionados con tu pregunta.
-
-    **Explicación paso a paso de la respuesta:**
-    INFORMACION DE ABACO - QA: {answer_qa}
-    Respuesta de IA: {answer_ia}
-    PRIORIZA LA INFORMACION DE ABACO EN TODO MOMENTO, usa la informacion IA para complementar si y solo si es necesario
-
-    **Ejemplo / Aplicación en la vida real:**
-    Por ejemplo, imagina que tienes una PYME y aplicas esto así... (genera un ejemplo si hay suficiente información).
-
-    **Conclusión:**
-    En resumen, esto es lo que necesitas saber sobre tu consulta. [ideas principales de la respuesta]
-    '''
-)
-format_answer_chain = LLMChain(llm=chat, prompt=format_answer_prompt)
-
 # Función principal
 def respuesta_abaco_data(input_text):
     try: 
@@ -152,21 +117,15 @@ def respuesta_abaco_data(input_text):
         print("RESULTADO DEL RETRIEVAL QA")
         print("Answer:", answer_qa)
         
-        answer_ia = ""
-        # Si no hay respuesta útil, usar chain_preguntas como respaldo
-        if not answer_qa or "No sé" in answer_qa or "No hay informacion" in answer_qa: 
-            answer_ia = chain_preguntas.run(input=input_text)
-            answer_ia = f"Informacion general de IA: {answer_ia}"
-            print("RESPUESTA DE IA", answer_ia)
-        else:
-            answer_ia = "Basado unicamente en la web de Abaco."
-    # Formatear la respuesta final
-        final_answer = format_answer_chain.run(input=input_text, answer_qa=answer_qa, answer_ia = answer_ia)
+        final_answer = get_chat_completion(
+            prompt = input_text, 
+            context = answer_qa,
+            chat_history = memory.load_memory_variables({})["chat_history"]
+        )
         return final_answer
     except Exception as e:
         return f"Lo siento, ocurrio un error al procesar la consulta: {str(e)}."
         
-
 # Crear la herramienta
 tool_preguntas = Tool(
     name="responder_preguntas_financieras",
@@ -178,7 +137,7 @@ print("Preguntas tool cargado")
 # Testeo
 if __name__ == "__main__":
     test_questions = [
-        "¿Qué es el flujo de caja?",  # Simple
+        "Que es Abaco",  # Simple
         "¿Cómo puedo calcular el flujo de caja de mi negocio?",  # Moderada
     ]
     for question in test_questions:
