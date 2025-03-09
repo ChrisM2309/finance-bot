@@ -46,22 +46,30 @@ def get_chat_completion(prompt, context=None, chat_history=None, temperature=0.0
     
     # Añadir historial si existe
     if chat_history:
-        messages.extend([{"role": msg.type, "content": msg.content} for msg in chat_history])
-    
+        for msg in chat_history:
+                # Obtener el rol desde el tipo de mensaje de LangChain
+                role = getattr(msg, 'type', 'user')  # Default a 'user' si no hay type
+                if role == "human":
+                    role = "user"
+                elif role == "ai":
+                    role = "assistant"
+                messages.append({"role": role, "content": msg.content})
     # Construir el mensaje del usuario
     user_content = prompt
     if context:
         user_content = f"Usa este contexto de la web de Ábaco: '{context}'. Responde: '{prompt}'"
     messages.append({"role": "user", "content": user_content})
     
-    response = openai_client.chat.completions.create(
-        model=FINE_TUNED_MODEL,
-        messages=messages,
-        temperature=temperature,
-        max_tokens=max_tokens
-    )
-    #print(messages)
-    return response.choices[0].message.content
+    try:
+        response = openai_client.chat.completions.create(
+            model=FINE_TUNED_MODEL,
+            messages=messages,
+            temperature=temperature,
+            max_tokens=max_tokens
+        )
+        return response.choices[0].message.content
+    except Exception as e:
+        raise Exception(f"Error al procesar la consulta: {str(e)}")
 
 
 

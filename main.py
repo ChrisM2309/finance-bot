@@ -2,7 +2,6 @@ import os
 from openai import OpenAI as OpenAI
 
 from langchain_community.chat_models import ChatOpenAI
-from langchain.schema import HumanMessage, SystemMessage, AIMessage
 from langchain_community.llms import OpenAI as OpenAI
 from langchain.memory import ConversationBufferMemory
 from langchain.chains import LLMChain, SimpleSequentialChain

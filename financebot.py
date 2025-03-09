@@ -1,20 +1,14 @@
 from openai import OpenAI
 import os
 from langchain.agents import initialize_agent
-from langchain.schema import HumanMessage, SystemMessage, AIMessage
-from langchain_community.llms import OpenAI
-from langchain.memory import ConversationBufferMemory
-from langchain.chains import LLMChain, SimpleSequentialChain
-from langchain.prompts import PromptTemplate
 
 # Importar la memoria
-from memory.context import conversation_memory
-memory = conversation_memory
+from memory.context import get_conversation_memory
+memory = get_conversation_memory()
 
 #IMPORTAR EL CHATBOT DE GPT 
 import models.llm_config as llm_config
 agent_model  = llm_config.get_openai_llm()
-
 
 #Agent tools importar 
 import active_tools
@@ -30,7 +24,7 @@ agente = initialize_agent(
     tools = agent_tools,
     llm = agent_model,
     agent="chat-conversational-react-description",
-    #verbose=True,
+    verbose=True,
     max_iterations = 10,
     memory = memory,
     handle_parsing_errors=True  # Maneja errores de parseo
@@ -41,18 +35,3 @@ def get_agent():
 
 def get_agent_tools(): 
     return agent_tools
-
-
-# Testeo del agente
-#print(agente.run("Quiero registrar un pago de $30 en electricidad, uno de $40 en internet. Luego, tengo que registrar un ingreso de $100 en ventas. Luego, calcula el flujo de caja con los valores anteriores y por ultimo, asigna una deuda de $40 para el 20 de marzo de 2025"))
-
-#print(agente.run("Registra un gasto de $150 en insumos y un ingreso de $200 en ventas."))
-#print(agente.run("¿Qué es el flujo de caja?"))
-#print(agente.run("Calcula el flujo de caja con ingresos de $500 y gastos de $300."))
-#print(agente.run("Registra un gasto de $200 en publiicidad."))
-#print(agente.run("Cuanto he gastado en total?"))
-#print(agente.run("¿Qué es el flujo de caja?"))
-
-#print(agente.run("Responde como pregunta financiera, dame un resumen de todas las operaciones que he realizado"))
-
-#print(agente.run("Calcula el balance general de ingresos y gastos."))
