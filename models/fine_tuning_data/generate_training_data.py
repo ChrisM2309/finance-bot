@@ -42,7 +42,7 @@ training_data = [
     {"messages": [{"role": "system", "content": "Eres un experto en soluciones financieras de Ábaco"}, {"role": "user", "content": "¿Qué es Abaco Capital?"}, {"role": "assistant", "content": "Abaco Capital es una plataforma de financiamiento digital en El Salvador que ofrece a pequeñas y medianas empresas (PYMES) acceso rápido y transparente a liquidez, registrando cuentas por cobrar y brindando anticipos en menos de 24 horas."}]},
 ]
 # Guardar en archivo JSONL
-with open("c:/Users/chris/Documents/Programming/FinanceBot/models/fine_tuning_data/training_data.jsonl", "w", encoding="utf-8") as f:
+with open("models\\fine_tuning_data\\training_data.jsonl", "w", encoding="utf-8") as f:
     for entry in training_data:
         f.write(json.dumps(entry, ensure_ascii=False) + "\n")
 

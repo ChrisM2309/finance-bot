@@ -51,7 +51,9 @@ def run_chatbot():
             last_input = last_interaction["input"]
             last_response = last_interaction["response"] 
             # Funcion de save_feedback en llm_config
-            save_feedback(last_input, last_interaction, feedback)
+            save_feedback(last_input, last_response, feedback)
             print(f"Retroalimentacion guardada: {feedback}")
+            
+            
 if __name__ == "__main__":
     run_chatbot()

@@ -51,8 +51,8 @@ determinar_complejidad_chain = LLMChain(llm=chat, prompt=determinar_complejidad_
 
 # CONFIGURACION DE RETRIEVER
 RETRIEVER_CONFIG = {
-    "simple": {"k": 2, "chain_type": "stuff", "use_multi_query": False},
-    "moderada": {"k": 5, "chain_type": "map_reduce", "use_multi_query": False},
+    "simple": {"k": 3, "chain_type": "stuff", "use_multi_query": False},
+    "moderada": {"k": 5, "chain_type": "stuff", "use_multi_query": False},
     "compleja": {"k": 3, "chain_type": "map_reduce", "use_multi_query": True}
 }
 
@@ -130,7 +130,7 @@ def respuesta_abaco_data(input_text):
 tool_preguntas = Tool(
     name="responder_preguntas_financieras",
     func=respuesta_abaco_data,
-    description="Responder preguntas sobre Abaco, finanzas, dinero, manejo del negocio y relacionados"
+    description="Responder preguntas sobre Abaco, finanzas, dinero, manejo del negocio y relacionados, herramienta mas comun"
 )
 print("Preguntas tool cargado")
 

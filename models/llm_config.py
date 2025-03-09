@@ -112,7 +112,7 @@ def get_chat_completion(prompt, context=None, chat_history=None, temperature=0.0
         str: Respuesta generada por el modelo.
     """
     messages = [
-        {"role": "system", "content": "Eres un asesor financiero experto de la fintech Abaco enfocado PYMES."}
+        {"role": "system", "content": "Eres un asesor financiero experto de la fintech Abaco enfocado en PYMES. Responde la pregunta del usuario usando la informacion dada y mencionando como Abaco puede ayudar. No olvides que debes ayudar al usuario en su pregunta"}
     ]
     
     # Añadir historial si existe
@@ -131,7 +131,7 @@ def get_chat_completion(prompt, context=None, chat_history=None, temperature=0.0
     # Construir el mensaje del usuario
     user_content = f"Pregunta: {prompt}"
     if context:
-        user_content += f"\nUsa este contexto de la web de Ábaco: {context}"
+        user_content += f"\nMarco Teorico, usa esta informacion como la base a tu respuesta: {context}"
     if feedback["likes"]:
         user_content += f"\nRespuestas bien valoradas, sigue este estilo: {', '.join(f"{like}" for like in feedback['likes'])}"
     if feedback["dislikes"]:
@@ -147,7 +147,7 @@ def get_chat_completion(prompt, context=None, chat_history=None, temperature=0.0
         )
         return response.choices[0].message.content
     except Exception as e:
-        raise Exception(f"Error al procesar la consulta: {str(e)}")
+        raise Exception(f"GetCompletion -- Error al procesar la consulta: {str(e)}")
 
 if __name__ == "__main__":
     print("Completed llm_config")
