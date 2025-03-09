@@ -130,7 +130,7 @@ def respuesta_abaco_data(input_text):
 tool_preguntas = Tool(
     name="responder_preguntas_financieras",
     func=respuesta_abaco_data,
-    description="Responder preguntas relacionadas a finanzas, dinero, manejo del negocio y similares"
+    description="Responder preguntas sobre Abaco, finanzas, dinero, manejo del negocio y relacionados"
 )
 print("Preguntas tool cargado")
 

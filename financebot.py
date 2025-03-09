@@ -25,7 +25,7 @@ agente = initialize_agent(
     llm = agent_model,
     agent="chat-conversational-react-description",
     verbose=True,
-    max_iterations = 10,
+    max_iterations = 15,
     memory = memory,
     handle_parsing_errors=True  # Maneja errores de parseo
     )
