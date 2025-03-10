@@ -16,7 +16,7 @@ response = client.fine_tuning.jobs.create(
     training_file= training_file_id,  # Reemplaza con tu file_id
     model="gpt-4o-mini-2024-07-18",       # Modelo base
     hyperparameters={
-        "n_epochs": 3            # Número de épocas (ajusta según necesidad)
+        "n_epochs": 5         # Número de épocas (ajusta según necesidad)
     }
 )
 

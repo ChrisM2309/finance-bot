@@ -21,11 +21,43 @@ openai_client = OpenAI(api_key=openai_api_key)
 #)
 FINE_TUNED_MODEL = "ft:gpt-4o-mini-2024-07-18:competitivecodingclub::B8pU9GKP"
 FEEDBACK_FILE = "models\\feedback_data\\chatbot_feedback.json"
-
+TRAINING_FILE = "models\\fine_tuning_data\\training_data.jsonl"
+FEEDBACK_LIMIT = 50
 #MANEJO DE EMBEDDINGS PARA FEEDBACK 
 EMBEDDING_MODEL = "text-embedding-ada-002"
 dimension = 1536 
 index = faiss.IndexFlatL2(dimension)
+# Funcion para actualizar el fine tunning 
+def prepare_fine_tunning_data():
+    if not os.path.exists(FEEDBACK_FILE):
+        return
+    
+    with open(FEEDBACK_FILE, "r", encoding="utf-8") as f:
+        data = json.load(f)
+        
+    with open(TRAINING_FILE, "a", encoding="utf-8") as f:
+        for entry in data:
+            if entry["feedback"] == "like":
+                f.write(json.dumps({
+                        "messages": [
+                            {"role": "system", "content": "Eres un asesor financiero experto para PYMES."},
+                            {"role": "user", "content": entry["prompt"]},
+                            {"role": "assistant", "content": entry["response"]}
+                        ]
+                    }, ensure_ascii=False) + "\n")
+            elif entry["feedback"] == "dislike":
+                f.write(json.dumps({
+                    "messages": [
+                        {"role": "system", "content": "Eres un asesor financiero experto de Ábaco para PYMES."},
+                        {"role": "user", "content": entry["prompt"]},
+                        {"role": "assistant", "content": "[EVITAR ESTA RESPUESTA:]" + entry["response"]}
+                    ]
+                }, ensure_ascii=False) + "\n")
+                
+    # Limpiar el archivo de retroalimentación después de generar el training file
+    with open(FEEDBACK_FILE, "w", encoding="utf-8") as f:
+        json.dump([], f, ensure_ascii=False, indent=2)
+                
 # Inicializar el modelo de OpenAI
 def get_openai_llm():
     return ChatOpenAI(
@@ -58,6 +90,9 @@ def save_feedback(prompt, response, feedback):
     with open(FEEDBACK_FILE, 'w', encoding= 'utf-8') as file: 
         json.dump(data, file, ensure_ascii= False, indent= 2)
     # FUTURO --> CONVERTIR FEEDBACK_FILE EN FINE TUNNING FILE 
+    if len(data) >= FEEDBACK_LIMIT:
+        prepare_fine_tunning_data()
+        print("Limite alcanzado de feedback, generando {}")
 
 # FUNCION PARA OBTENER FEEDBACK RELEVANTE 
 def get_similar_feedback(prompt, k = 3):

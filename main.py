@@ -8,7 +8,10 @@ from langchain.chains import LLMChain, SimpleSequentialChain
 from langchain.prompts import PromptTemplate
 
 # Importar save_feedback
-from models.llm_config import save_feedback
+from models.llm_config import save_feedback, prepare_fine_tunning_data
+
+prepare_fine_tunning_data()
+
 import financebot
 agente = financebot.get_agent() 
 
