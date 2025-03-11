@@ -164,7 +164,7 @@ def get_chat_completion(prompt, context=None, chat_history=None, temperature=0.0
     # Buscar feedback similar
     feedback = get_similar_feedback(prompt)
     # Construir el mensaje del usuario
-    user_content = f"Pregunta: {prompt}"
+    user_content = f"ANALIZA Y RESPONDE EN ESPAÑOL\nPregunta: {prompt}"
     if context:
         user_content += f"\nMarco Teorico, usa esta informacion como la base a tu respuesta: {context}"
     if feedback["likes"]:
