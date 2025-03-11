@@ -168,9 +168,9 @@ def get_chat_completion(prompt, context=None, chat_history=None, temperature=0.0
     if context:
         user_content += f"\nMarco Teorico, usa esta informacion como la base a tu respuesta: {context}"
     if feedback["likes"]:
-        user_content += f"\nRespuestas bien valoradas, sigue este estilo: {', '.join(f"{like}" for like in feedback['likes'])}"
+        user_content += f"\nRespuestas bien valoradas, sigue este estilo: {', '.join(str(like) for like in feedback['likes'])}"
     if feedback["dislikes"]:
-        user_content += f"\nRespuestas mal valoradas, evita seguir este estilo: {', '.join(f"{dislike}" for dislike in feedback['dislikes'])}"
+        user_content += f"\nRespuestas mal valoradas, evita seguir este estilo: {', '.join(str(dislike) for dislike in feedback['dislikes'])}"
     messages.append({"role": "user", "content": user_content})
     
     try:
