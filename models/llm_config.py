@@ -19,7 +19,7 @@ openai_client = OpenAI(api_key=openai_api_key)
 #client = OpenAI(
 #    api_key = openai_api_key
 #)
-FINE_TUNED_MODEL = "ft:gpt-4o-mini-2024-07-18:competitivecodingclub::B8pU9GKP"
+FINE_TUNED_MODEL = "ft:gpt-4o-mini-2024-07-18:competitivecodingclub::B9X7OZxw"
 FEEDBACK_FILE = "models\\feedback_data\\chatbot_feedback.json"
 TRAINING_FILE = "models\\fine_tuning_data\\training_data.jsonl"
 FEEDBACK_LIMIT = 50
