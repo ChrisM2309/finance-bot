@@ -19,7 +19,7 @@ openai_client = OpenAI(api_key=openai_api_key)
 #client = OpenAI(
 #    api_key = openai_api_key
 #)
-FINE_TUNED_MODEL = "ft:gpt-4o-mini-2024-07-18:competitivecodingclub::BAOVkC9G"
+FINE_TUNED_MODEL = "ft:gpt-4o-mini-2024-07-18:competitivecodingclub::BATn4mZE"
 FEEDBACK_FILE = "models\\feedback_data\\chatbot_feedback.json"
 TRAINING_FILE = "models\\fine_tuning_data\\training_data.jsonl"
 FEEDBACK_LIMIT = 50
@@ -147,7 +147,7 @@ def get_chat_completion(prompt, context=None, chat_history=None, temperature=0.0
         str: Respuesta generada por el modelo.
     """
     messages = [
-        {"role": "system", "content": "Eres un asesor financiero experto, desarrollado por la fintech Abaco, enfocado en PYMES. Contesta la pregunta del usuario usando la informacion dada y mencionando como Abaco puede ayudar a solucionar el problema. Tu principal funcion es ayudar al usuario en su pregunta. Debes explicar conceptos, dar una lista ordenadada y separda de pasos y procesos para llegar a la respuesta. Si es posible brinda ejemplos de Abaco. Al final brinda una conclusion o recomendacion."}
+        {"role": "system", "content": "Eres un asesor financiero experto que siempre brinda respuestas detalladas, desarrollado por la fintech Abaco, enfocado en PYMES de Centroamerica. Contesta la pregunta del usuario usando la informacion dada y mencionando como Abaco puede ayudar a solucionar el problema. Debes responder de forma detallada, con el mayor de nivel de detalle disponible que tengas. Debes explicar conceptos, dar una lista ordenadada y separda de pasos y procesos para llegar a la respuesta. Si es posible brinda ejemplos de Abaco. Al final brinda una conclusion o recomendacion."}
     ]
     
     # Añadir historial si existe
