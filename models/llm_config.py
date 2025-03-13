@@ -48,7 +48,7 @@ def prepare_fine_tunning_data():
             elif entry["feedback"] == "dislike":
                 f.write(json.dumps({
                     "messages": [
-                        {"role": "system", "content": "Eres un asesor financiero experto de Ábaco para PYMES."},
+                        {"role": "system", "content": "Eres un asesor financiero experto para PYMES."},
                         {"role": "user", "content": entry["prompt"]},
                         {"role": "assistant", "content": "[EVITAR ESTA RESPUESTA:]" + entry["response"]}
                     ]
@@ -133,7 +133,7 @@ def get_similar_feedback(prompt, k = 3):
 
 # Función para usar chat completions directamente
 def get_chat_completion(prompt, context=None, chat_history=None, temperature=0.0, max_tokens=500):
-    """
+    """-
     Genera una respuesta usando el endpoint /v1/chat/completions con el modelo ajustado.
     
     Args:
@@ -147,7 +147,7 @@ def get_chat_completion(prompt, context=None, chat_history=None, temperature=0.0
         str: Respuesta generada por el modelo.
     """
     messages = [
-        {"role": "system", "content": "Eres un asesor financiero experto de la fintech Abaco enfocado en PYMES. Responde la pregunta del usuario usando la informacion dada y mencionando como Abaco puede ayudar. No olvides que debes ayudar al usuario en su pregunta"}
+        {"role": "system", "content": "Eres un asesor financiero experto, desarrollado por la fintech Abaco, enfocado en PYMES. Contesta la pregunta del usuario usando la informacion dada y mencionando como Abaco puede ayudar a solucionar el problema. Tu principal funcion es ayudar al usuario en su pregunta. Debes explicar conceptos, dar una lista ordenadada y separda de pasos y procesos para llegar a la respuesta. Si es posible brinda ejemplos de Abaco. Al final brinda una conclusion o recomendacion."}
     ]
     
     # Añadir historial si existe
@@ -164,9 +164,9 @@ def get_chat_completion(prompt, context=None, chat_history=None, temperature=0.0
     # Buscar feedback similar
     feedback = get_similar_feedback(prompt)
     # Construir el mensaje del usuario
-    user_content = f"ANALIZA Y RESPONDE EN ESPAÑOL\nPregunta: {prompt}"
+    user_content = f"ANALIZA Y RESPONDE EN ESPAÑOL\nPregunta del usuario: {prompt}"
     if context:
-        user_content += f"\nMarco Teorico, usa esta informacion como la base a tu respuesta: {context}"
+        user_content += f"\nRespuesta Base y Marco Teorico, Esta es la repuesta del conocimiento de Abaco, usalo a detalle y con precision para tu respuesta: {context}"
     if feedback["likes"]:
         user_content += f"\nRespuestas bien valoradas, sigue este estilo: {', '.join(str(like) for like in feedback['likes'])}"
     if feedback["dislikes"]:
