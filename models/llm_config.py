@@ -63,7 +63,14 @@ def get_openai_llm():
     return ChatOpenAI(
         model= FINE_TUNED_MODEL,
         api_key = openai_api_key,
-        temperature=0.0
+        temperature=0.4
+    )
+    
+def get_simple_openai_llm():
+    return ChatOpenAI(
+        model= "gpt-4o-mini",
+        api_key= openai_api_key,
+        temperature = 0.4
     )
     
 # FUNCION PARA GENERAR EL EMBEDDING DE TEXTO 
@@ -132,7 +139,7 @@ def get_similar_feedback(prompt, k = 3):
 
 
 # Función para usar chat completions directamente
-def get_chat_completion(prompt, context=None, chat_history=None, temperature=0.0, max_tokens=500):
+def get_chat_completion(prompt, context=None, chat_history=None, temperature=0.4, max_tokens=2000):
     """-
     Genera una respuesta usando el endpoint /v1/chat/completions con el modelo ajustado.
     
@@ -147,7 +154,7 @@ def get_chat_completion(prompt, context=None, chat_history=None, temperature=0.0
         str: Respuesta generada por el modelo.
     """
     messages = [
-        {"role": "system", "content": "Eres un asesor financiero experto que siempre brinda respuestas detalladas, desarrollado por la fintech Abaco, enfocado en PYMES de Centroamerica. Contesta la pregunta del usuario usando la informacion dada y mencionando como Abaco puede ayudar a solucionar el problema. Debes responder de forma detallada, con el mayor de nivel de detalle disponible que tengas. Debes explicar conceptos, dar una lista ordenadada y separda de pasos y procesos para llegar a la respuesta. Si es posible brinda ejemplos de Abaco. Al final brinda una conclusion o recomendacion."}
+        {"role": "system", "content": "Eres un asesor financiero experto que siempre brinda respuestas detalladas, desarrollado por la fintech Ábaco, enfocado en PYMES de Centroamérica. Sigue este formato al responder: 1) Define los conceptos clave en términos simples. 2) Explica la solucion y su importancia. 3) Detalla pasos concretos para abordarlo, numerados y separados. 4) Incluye un ejemplo práctico. 5) Concluye con una recomendación, Ábaco puede ayudar y un seguimiento a la pregunta."} 
     ]
     
     # Añadir historial si existe
@@ -180,6 +187,77 @@ def get_chat_completion(prompt, context=None, chat_history=None, temperature=0.0
             temperature=temperature,
             max_tokens=max_tokens
         )
+        return response.choices[0].message.content
+    except Exception as e:
+        raise Exception(f"GetCompletion -- Error al procesar la consulta: {str(e)}")
+    
+#! FUNCION PARA LOS COMPLETIONS DEL CLIENTE 
+def get_client_chat_completion(prompt, general_answer=None, chat_history=None, empresa_data=None, temperature=0.5, max_tokens=2000):
+    """-
+    Genera una respuesta para clients usando chat completion con el modelo ajustado.
+    
+    Args:
+        prompt (str): La pregunta o instrucción del usuario.
+        general_answer (str, optional): Respuesta basica 
+        chat_history (list, optional): Lista de mensajes previos para incluir historial.
+        temperature (float): Controla la creatividad (0.0 = determinista).
+        max_tokens (int): Límite de tokens en la respuesta.
+    
+    Returns:
+        str: Respuesta generada por el modelo.
+    """
+    
+    sys_message = (
+        '''
+        Eres un asesor financiero experto de Ábaco para clientes. Siempre proporciona respuestas detalladas y personalizadas basadas en los datos de la empresa del usuario.
+        Tienes acceso a lo siguiente:
+        1. Pregunta del usuario, tu prioridad y lo que debes resolver
+        2. Informacion de la web de Abaco que puede guiarte en la respuesta (opcional)
+        3. Data de la empresa, toda la data disopinible de la empresa para que generes una respuesta basada en la empresa del usuario
+        Para responder, sigue este formato: 
+        1) Presentar la respuesta y definición de conceptos claves. 
+        2) Explicacion detallada de la respuesta, incluyendo datos relevantes y ejemplos.
+        3) Pasos numerados para abordar el problema. 
+        4) Explicacion con los datos de la empresa. Esta parte es critica, usa de forma detallada la informacion existente de la empresa para explicar y completar la respuesta.
+       '''
+    )
+    
+    if empresa_data:
+        sys_message += f"\nDatos de la empresa: {json.dumps(empresa_data, ensure_ascii=False, indent=2)}"
+        
+    messages = [{"role": "system", "content": sys_message}]
+    
+    # Añadir historial si existe
+    if chat_history:
+        for msg in chat_history:
+                # Obtener el rol desde el tipo de mensaje de LangChain
+                role = getattr(msg, 'type', 'user')  # Default a 'user' si no hay type
+                if role == "human":
+                    role = "user"
+                elif role == "ai":
+                    role = "assistant"
+                messages.append({"role": role, "content": msg.content})
+    
+    # Buscar feedback similar
+    feedback = get_similar_feedback(prompt)
+    # Construir el mensaje del usuario
+    user_content = f"\nPregunta del usuario: {prompt}"
+    if general_answer:
+        user_content += f"\nInformacion de apoyo: {general_answer}"
+    if feedback["likes"]:
+        user_content += f"\nRespuestas bien valoradas, sigue este estilo: {', '.join(str(like) for like in feedback['likes'])}"
+    if feedback["dislikes"]:
+        user_content += f"\nRespuestas mal valoradas, evita seguir este estilo: {', '.join(str(dislike) for dislike in feedback['dislikes'])}"
+    messages.append({"role": "user", "content": user_content})
+    
+    try:
+        response = openai_client.chat.completions.create(
+            model=FINE_TUNED_MODEL,
+            messages=messages,
+            temperature=temperature,
+            max_tokens=max_tokens
+        )
+        print(f"RESPUESTA DESDE CLIENT CHAT COMPLETION {response.choices[0].message.content}")
         return response.choices[0].message.content
     except Exception as e:
         raise Exception(f"GetCompletion -- Error al procesar la consulta: {str(e)}")

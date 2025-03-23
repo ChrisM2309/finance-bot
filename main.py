@@ -12,11 +12,25 @@ from models.llm_config import save_feedback, prepare_fine_tunning_data
 
 #prepare_fine_tunning_data()
 
+from tools.abaco_platform.abaco_client_tool import set_empresa_id, cargar_datos_empresa_global
+
+# IMPLEMENTACION UNICAMENTE PARA TESTEO, REQUIERE MAS DESARROLLO
+from is_client import set_is_abaco_client, get_is_abaco_client
+#! AQUI SE DEFINE TODO LO RELACIONADO A CLIENTE O NO CLIENTE
+set_is_abaco_client(True)
+empresa_id = "2-DistribuidoraComercialSur"
+es_cliente = get_is_abaco_client()
+
+if es_cliente == True:
+    set_empresa_id(empresa_id)
+    cargar_datos_empresa_global()
+
 import financebot
 agente = financebot.get_agent() 
-
 interaction_history = []
+
 def run_chatbot(): 
+    print(f"from main, ES CLIENTE ABACO: {es_cliente}")
     print("Bienvenido al Chatbot Financiero de Abaco. ¿En qué puedo ayudarte?\nEscribe 'salir' para terminar.")
     while True: 
         user_input = input("User: ").strip()
@@ -59,4 +73,5 @@ def run_chatbot():
             
             
 if __name__ == "__main__":
+    # Logica de cliente
     run_chatbot()

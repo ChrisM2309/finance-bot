@@ -1,0 +1,364 @@
+{
+    "id": "3-ManufacturasIndustriales",
+    "nombre": "Empresa 3: Manufacturas Industriales, S.A. de C.V.",
+    "sector": "Fabricación de productos metálicos",
+    "empleados": 120,
+    "fundacion": 2005,
+    "balances_generales": {
+      "2023": {
+        "activos": {
+          "corrientes": {
+            "efectivo": 380000,
+            "cuentas_por_cobrar": 1250000,
+            "inventario": 1850000,
+            "otros": 220000,
+            "total": 3700000
+          },
+          "no_corrientes": {
+            "propiedad_planta_equipo": 3250000,
+            "intangibles": 350000,
+            "inversiones_largo_plazo": 550000,
+            "total": 4150000
+          },
+          "total_activos": 7850000
+        },
+        "pasivos": {
+          "corrientes": {
+            "cuentas_por_pagar": 1350000,
+            "prestamos_corto_plazo": 850000,
+            "impuestos_por_pagar": 220000,
+            "otros": 180000,
+            "total": 2600000
+          },
+          "no_corrientes": {
+            "prestamos_largo_plazo": 2250000,
+            "obligaciones_empleados": 420000,
+            "total": 2670000
+          },
+          "total_pasivos": 5270000
+        },
+        "patrimonio": {
+          "capital_social": 1500000,
+          "utilidades_retenidas": 1080000,
+          "total": 2580000
+        },
+        "total_pasivo_patrimonio": 7850000
+      },
+      "2024": {
+        "activos": {
+          "corrientes": {
+            "efectivo": 520000,
+            "cuentas_por_cobrar": 1520000,
+            "inventario": 2100000,
+            "otros": 280000,
+            "total": 4420000
+          },
+          "no_corrientes": {
+            "propiedad_planta_equipo": 3750000,
+            "intangibles": 420000,
+            "inversiones_largo_plazo": 680000,
+            "total": 4850000
+          },
+          "total_activos": 9270000
+        },
+        "pasivos": {
+          "corrientes": {
+            "cuentas_por_pagar": 1580000,
+            "prestamos_corto_plazo": 920000,
+            "impuestos_por_pagar": 265000,
+            "otros": 210000,
+            "total": 2975000
+          },
+          "no_corrientes": {
+            "prestamos_largo_plazo": 2550000,
+            "obligaciones_empleados": 495000,
+            "total": 3045000
+          },
+          "total_pasivos": 6020000
+        },
+        "patrimonio": {
+          "capital_social": 1750000,
+          "utilidades_retenidas": 1500000,
+          "total": 3250000
+        },
+        "total_pasivo_patrimonio": 9270000
+      }
+    },
+    "iva": {
+      "2023": [
+        {
+          "mes": "Enero",
+          "ventas": 580000,
+          "iva_debito": 75400,
+          "compras": 435000,
+          "iva_credito": 56550,
+          "iva_pagar": 18850
+        },
+        {
+          "mes": "Febrero",
+          "ventas": 605000,
+          "iva_debito": 78650,
+          "compras": 450000,
+          "iva_credito": 58500,
+          "iva_pagar": 20150
+        },
+        {
+          "mes": "Marzo",
+          "ventas": 625000,
+          "iva_debito": 81250,
+          "compras": 470000,
+          "iva_credito": 61100,
+          "iva_pagar": 20150
+        },
+        {
+          "mes": "Abril",
+          "ventas": 650000,
+          "iva_debito": 84500,
+          "compras": 485000,
+          "iva_credito": 63050,
+          "iva_pagar": 21450
+        },
+        {
+          "mes": "Mayo",
+          "ventas": 670000,
+          "iva_debito": 87100,
+          "compras": 505000,
+          "iva_credito": 65650,
+          "iva_pagar": 21450
+        },
+        {
+          "mes": "Junio",
+          "ventas": 695000,
+          "iva_debito": 90350,
+          "compras": 520000,
+          "iva_credito": 67600,
+          "iva_pagar": 22750
+        },
+        {
+          "mes": "Julio",
+          "ventas": 715000,
+          "iva_debito": 92950,
+          "compras": 540000,
+          "iva_credito": 70200,
+          "iva_pagar": 22750
+        },
+        {
+          "mes": "Agosto",
+          "ventas": 740000,
+          "iva_debito": 96200,
+          "compras": 555000,
+          "iva_credito": 72150,
+          "iva_pagar": 24050
+        },
+        {
+          "mes": "Septiembre",
+          "ventas": 760000,
+          "iva_debito": 98800,
+          "compras": 570000,
+          "iva_credito": 74100,
+          "iva_pagar": 24700
+        },
+        {
+          "mes": "Octubre",
+          "ventas": 785000,
+          "iva_debito": 102050,
+          "compras": 590000,
+          "iva_credito": 76700,
+          "iva_pagar": 25350
+        },
+        {
+          "mes": "Noviembre",
+          "ventas": 810000,
+          "iva_debito": 105300,
+          "compras": 605000,
+          "iva_credito": 78650,
+          "iva_pagar": 26650
+        },
+        {
+          "mes": "Diciembre",
+          "ventas": 835000,
+          "iva_debito": 108550,
+          "compras": 625000,
+          "iva_credito": 81250,
+          "iva_pagar": 27300
+        }
+      ],
+      "2024": [
+        {
+          "mes": "Enero",
+          "ventas": 745000,
+          "iva_debito": 96850,
+          "compras": 560000,
+          "iva_credito": 72800,
+          "iva_pagar": 24050
+        },
+        {
+          "mes": "Febrero",
+          "ventas": 770000,
+          "iva_debito": 100100,
+          "compras": 580000,
+          "iva_credito": 75400,
+          "iva_pagar": 24700
+        },
+        {
+          "mes": "Marzo",
+          "ventas": 800000,
+          "iva_debito": 104000,
+          "compras": 600000,
+          "iva_credito": 78000,
+          "iva_pagar": 26000
+        },
+        {
+          "mes": "Abril",
+          "ventas": 825000,
+          "iva_debito": 107250,
+          "compras": 620000,
+          "iva_credito": 80600,
+          "iva_pagar": 26650
+        },
+        {
+          "mes": "Mayo",
+          "ventas": 850000,
+          "iva_debito": 110500,
+          "compras": 640000,
+          "iva_credito": 83200,
+          "iva_pagar": 27300
+        },
+        {
+          "mes": "Junio",
+          "ventas": 880000,
+          "iva_debito": 114400,
+          "compras": 660000,
+          "iva_credito": 85800,
+          "iva_pagar": 28600
+        },
+        {
+          "mes": "Julio",
+          "ventas": 905000,
+          "iva_debito": 117650,
+          "compras": 680000,
+          "iva_credito": 88400,
+          "iva_pagar": 29250
+        },
+        {
+          "mes": "Agosto",
+          "ventas": 935000,
+          "iva_debito": 121550,
+          "compras": 700000,
+          "iva_credito": 91000,
+          "iva_pagar": 30550
+        },
+        {
+          "mes": "Septiembre",
+          "ventas": 960000,
+          "iva_debito": 124800,
+          "compras": 720000,
+          "iva_credito": 93600,
+          "iva_pagar": 31200
+        },
+        {
+          "mes": "Octubre",
+          "ventas": 990000,
+          "iva_debito": 128700,
+          "compras": 745000,
+          "iva_credito": 96850,
+          "iva_pagar": 31850
+        },
+        {
+          "mes": "Noviembre",
+          "ventas": 1020000,
+          "iva_debito": 132600,
+          "compras": 765000,
+          "iva_credito": 99450,
+          "iva_pagar": 33150
+        },
+        {
+          "mes": "Diciembre",
+          "ventas": 1050000,
+          "iva_debito": 136500,
+          "compras": 790000,
+          "iva_credito": 102700,
+          "iva_pagar": 33800
+        }
+      ]
+    },
+    "renta": {
+      "2023": {
+        "ingresos": {
+          "ventas_brutas": 8470000,
+          "otros_ingresos": 280000,
+          "total": 8750000
+        },
+        "costos_gastos": {
+          "costo_ventas": 6350000,
+          "gastos_operativos": 1450000,
+          "gastos_financieros": 320000,
+          "depreciacion_amortizacion": 280000,
+          "total": 8400000
+        },
+        "utilidad_antes_impuestos": 350000,
+        "impuesto_renta": 105000,
+        "utilidad_neta": 245000
+      },
+      "2024": {
+        "ingresos": {
+          "ventas_brutas": 10730000,
+          "otros_ingresos": 350000,
+          "total": 11080000
+        },
+        "costos_gastos": {
+          "costo_ventas": 8060000,
+          "gastos_operativos": 1680000,
+          "gastos_financieros": 350000,
+          "depreciacion_amortizacion": 320000,
+          "total": 10410000
+        },
+        "utilidad_antes_impuestos": 670000,
+        "impuesto_renta": 201000,
+        "utilidad_neta": 469000
+      }
+    },
+    "creditos": {
+      "cerrados": [
+        {
+          "id": "F-2023-0205",
+          "monto_inicial": 450000,
+          "fecha_inicio": "20/05/2023",
+          "fecha_cierre": "19/11/2023",
+          "tipo_facturas": "Distribuidores nacionales",
+          "estado": "Pagado completamente (con un retraso de 15 días en un pago)",
+          "tasa_interes": 2.4,
+          "comision_desembolso": 9000,
+          "asesoria_digital": 55
+        }
+      ],
+      "vigentes": [
+        {
+          "id": "F-2024-0089",
+          "monto_inicial": 550000,
+          "fecha_inicio": "08/09/2024",
+          "fecha_vencimiento": "07/03/2025",
+          "saldo_actual": 230000,
+          "tipo_facturas": "Exportaciones a Centroamérica",
+          "estado": "En mora (45 días de atraso)",
+          "tasa_interes": 2.35,
+          "comision_desembolso": 11000,
+          "asesoria_digital": 55,
+          "intereses_moratorios": 12500,
+          "razon_mora": "Retraso en pagos de clientes en Guatemala debido a problemas aduaneros"
+        },
+        {
+          "id": "F-2024-0312",
+          "monto_inicial": 320000,
+          "fecha_inicio": "25/07/2024",
+          "fecha_vencimiento": "24/07/2025",
+          "saldo_actual": 290000,
+          "tipo_facturas": "Clientes del sector automotriz",
+          "estado": "Al corriente",
+          "tasa_interes": 2.3,
+          "comision_desembolso": 6400,
+          "asesoria_digital": 55
+        }
+      ]
+    }
+  }
