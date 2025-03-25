@@ -1,6 +1,7 @@
 from openai import OpenAI
 import os
 from langchain.agents import initialize_agent
+from langchain.schema import SystemMessage
 
 # Importar la memoria
 from memory.context import get_conversation_memory
@@ -20,7 +21,27 @@ tool_multiples = multiples_tool.tool_multiples
 agent_tools.append(tool_multiples)
 
 from custom_executor_and_parser import CustomOutputParser
+from is_client import get_is_client_string
+from models.llm_config import get_standard_sys_msg
+sys_msg = """
+    Eres un asesor financiero experto que siempre brinda respuestas detalladas, desarrollado por la fintech Ábaco, enfocado en PYMES de Centroamérica. 
+    Eres un asistente inteligente y útil especializado en tareas financieras y en servicios de Abaco. 
+    Debes ser amable, profesional y proporcionar respuestas claras. 
+    Si no sabes algo, admítelo y no inventes información. 
+    Utiliza las herramientas proporcionadas cuando sea necesario. 
+    """
+    
+sys_msg += get_is_client_string()
+sys_msg += get_standard_sys_msg()
 
+system_message = SystemMessage(
+    content= sys_msg
+)
+
+# Configurar el prompt del agente con el system message
+agent_kwargs = {
+    "system_message": sys_msg,
+}
 # Inicializar el agente
 agente = initialize_agent(
     tools=agent_tools,
@@ -30,7 +51,9 @@ agente = initialize_agent(
     max_iterations=30,
     memory=memory,
     handle_parsing_errors=True, # Maneja errores de parseo
-    output_parser=CustomOutputParser()  # Agregar el parser personalizado aquí
+    output_parser=CustomOutputParser(),  # Agregar el parser personalizado aquí
+    agent_kwargs=agent_kwargs
+
 )
 
 from custom_executor_and_parser import CustomAgentExecutor

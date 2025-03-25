@@ -7,3 +7,12 @@ def set_is_abaco_client(state):
     
 def get_is_abaco_client():
     return is_abaco_client
+
+def get_is_client_string():
+    base_str = "\nEN ESTE MOMENTO, TRATAS CON UN "
+    if get_is_abaco_client(): 
+        base_str +=  "CLIENTE DE ABACO"
+    else: 
+        base_str += "NO CLIENTE DE ABACO"
+    base_str += "\n"
+    return base_str

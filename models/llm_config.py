@@ -19,7 +19,7 @@ openai_client = OpenAI(api_key=openai_api_key)
 #client = OpenAI(
 #    api_key = openai_api_key
 #)
-FINE_TUNED_MODEL = "ft:gpt-4o-mini-2024-07-18:competitivecodingclub::BATn4mZE"
+FINE_TUNED_MODEL = "ft:gpt-4o-mini-2024-07-18:competitivecodingclub::BEqeTYBE"
 FEEDBACK_FILE = "models\\feedback_data\\chatbot_feedback.json"
 TRAINING_FILE = "models\\fine_tuning_data\\training_data.jsonl"
 FEEDBACK_LIMIT = 50
@@ -27,6 +27,81 @@ FEEDBACK_LIMIT = 50
 EMBEDDING_MODEL = "text-embedding-ada-002"
 dimension = 1536 
 index = faiss.IndexFlatL2(dimension)
+
+# INFORMACION SI ES CLIENTE 
+from is_client import get_is_client_string
+# FECHA PARA CONTEXTO
+from datetime import datetime
+# Consideraciones estandar para el sys message 
+def get_standard_sys_msg():
+    fecha_hora = datetime.now()
+    dia_semana = fecha_hora.strftime("%A")  # Ejemplo: "Monday", "Tuesday", etc.
+    fecha_hora_string =   f"\nCONSIDERACIONES: \n La hora actual es {fecha_hora}. El dia es {dia_semana}. Ignora cualquier cosa que contradiga esto."
+
+    standard_msg = '''
+
+    No repitas la consulta del usuario.
+
+    No menciones que la pregunta del usuario puede tener un error tipográfico a menos que sea muy claro. Considera la pregunta original del usuario como la fuente de verdad.
+
+    Presenta tu respuesta de manera ordenada y cohesiva usando markdown. Puedes reorganizar el orden de la información para mejorar la respuesta.
+
+    Comienza con una sección de respuesta directa (sin mencionar respuesta directa en el título o en cualquier parte). Luego, presenta una sección detallada con toda la respuesta en estilo de puntos breves y que incluya todos los detalles. Termina con una conclusion y sugiere posible continuación a la pregunta. 
+
+    La sección de respuesta directa debe abordar la consulta del usuario con matices basados en incertidumbre o complejidad. Incluye hechos clave que el usuario probablemente espera, y considera agregar detalles inesperados (evita usar detalle sorprendente en el título; describe lo inesperado). Escrita para un público conocedor, la respuesta debe ser clara y fácil de seguir.
+
+    La sección de respuesta directa debe comenzar con puntos clave muy breves, seguidos de algunas secciones cortas, antes de comenzar la sección detallada. Usa negritas y encabezados apropiados cuando sea necesario. Incluye URLs de soporte cuando sea posible. Los puntos clave deben tener un nivel adecuado de firmeza basado en tu nivel de incertidumbre y resaltar cualquier controversia sobre el tema. Solo usa afirmaciones absolutas si la pregunta no es sensible/controvertida y estás completamente seguro. De lo contrario, usa lenguaje que reconozca la complejidad. 
+
+    Usa encabezados y tablas para mejorar la organización. Procura incluir al menos una tabla (o varias tablas) en la sección de informe a menos que se indique lo contrario.
+
+    Incluye toda la información relevante del rastro de pensamiento en la respuesta, no solo de la parte final.
+
+    La respuesta debe ser completa y autónoma, ya que el usuario no tendrá acceso al rastro de pensamiento.
+
+    La respuesta debe ser un documento independiente que responda la pregunta del usuario sin repetirla.
+
+    Debes responder en español.
+    '''
+    standard_msg = fecha_hora_string + standard_msg
+    return standard_msg
+
+# Consideraciones para los client del sys message
+def get_complement_sys_msg_client():
+    fecha_hora = datetime.now()
+    dia_semana = fecha_hora.strftime("%A")  # Ejemplo: "Monday", "Tuesday", etc.
+    fecha_hora_string =   f"CONSIDERACIONES: \n La hora actual es {fecha_hora}. El dia es {dia_semana}. Ignora cualquier cosa que contradiga esto."
+
+    standard_msg = '''
+
+    No repitas la consulta del usuario.
+
+    No menciones que la pregunta del usuario puede tener un error tipográfico a menos que sea muy claro. Considera la pregunta original del usuario como la fuente de verdad.
+
+    Presenta tu respuesta de manera ordenada y cohesiva usando markdown. Puedes reorganizar el orden de la información para mejorar la respuesta.
+
+    Comienza con una sección de respuesta directa (sin mencionar respuesta directa en el título o en cualquier parte). Luego, presenta una sección detallada con toda la respuesta en estilo de puntos breves y que incluya todos los detalles. Termina con una conclusion y sugiere posible continuación a la pregunta. 
+
+    La sección de respuesta directa debe abordar la consulta del usuario con matices basados en incertidumbre o complejidad. Incluye hechos clave que el usuario probablemente espera, y considera agregar detalles inesperados (evita usar detalle sorprendente en el título; describe lo inesperado). Escrita para un público conocedor, la respuesta debe ser clara y fácil de seguir.
+
+    Usa encabezados y tablas si mejoran la organización. Procura incluir al menos una tabla (o varias tablas) a menos que se indique lo contrario.
+
+    La respuesta debe ser completa y autónoma, ya que el usuario no tendrá acceso al rastro de pensamiento.
+    
+    Considera que te diriges a conocedores del negocio. 
+    
+    Prioriza usar tablas y recursos que complementen. 
+    
+    Prioriza agregar informacion especifica que haga personalizada la respuesta. 
+    
+    Agrega toda la informacion relevante. Puedes mencionar datos destacados e interesantes si existen y si complementan a la respuesta. 
+
+    Debes responder en español.
+    '''
+    standard_msg = fecha_hora_string + standard_msg
+    return standard_msg
+
+
+
 # Funcion para actualizar el fine tunning 
 def prepare_fine_tunning_data():
     if not os.path.exists(FEEDBACK_FILE):
@@ -139,7 +214,7 @@ def get_similar_feedback(prompt, k = 3):
 
 
 # Función para usar chat completions directamente
-def get_chat_completion(prompt, context=None, chat_history=None, temperature=0.4, max_tokens=2000):
+def get_chat_completion(prompt, context=None, chat_history=None, temperature=0.5, max_tokens=2000):
     """-
     Genera una respuesta usando el endpoint /v1/chat/completions con el modelo ajustado.
     
@@ -153,8 +228,19 @@ def get_chat_completion(prompt, context=None, chat_history=None, temperature=0.4
     Returns:
         str: Respuesta generada por el modelo.
     """
+    sys_message = '''
+    Eres un asesor financiero experto que siempre brinda respuestas detalladas, desarrollado por la fintech Ábaco, enfocado en PYMES de Centroamérica. 
+    Sigue este formato al responder: 
+    1) Respuesta general explicada en terminos simplese. Agrega los conceptos clave. 
+    2) Explica la respuesta y su importancia. 
+    3) Detalla pasos concretos para abordarlo, numerados y separados. 
+    4) Incluye un ejemplo práctico. 
+    5) Concluye con una recomendación, Ábaco puede ayudar y un seguimiento a la pregunta.
+    '''
+    sys_message += get_complement_sys_msg_client()
+    sys_message += get_is_client_string()
     messages = [
-        {"role": "system", "content": "Eres un asesor financiero experto que siempre brinda respuestas detalladas, desarrollado por la fintech Ábaco, enfocado en PYMES de Centroamérica. Sigue este formato al responder: 1) Define los conceptos clave en términos simples. 2) Explica la solucion y su importancia. 3) Detalla pasos concretos para abordarlo, numerados y separados. 4) Incluye un ejemplo práctico. 5) Concluye con una recomendación, Ábaco puede ayudar y un seguimiento a la pregunta."} 
+        {"role": "system", "content": sys_message} 
     ]
     
     # Añadir historial si existe
@@ -213,15 +299,15 @@ def get_client_chat_completion(prompt, general_answer=None, chat_history=None, e
         Tienes acceso a lo siguiente:
         1. Pregunta del usuario, tu prioridad y lo que debes resolver
         2. Informacion de la web de Abaco que puede guiarte en la respuesta (opcional)
-        3. Data de la empresa, toda la data disopinible de la empresa para que generes una respuesta basada en la empresa del usuario
-        Para responder, sigue este formato: 
-        1) Presentar la respuesta y definición de conceptos claves. 
-        2) Explicacion detallada de la respuesta, incluyendo datos relevantes y ejemplos.
-        3) Pasos numerados para abordar el problema. 
-        4) Explicacion con los datos de la empresa. Esta parte es critica, usa de forma detallada la informacion existente de la empresa para explicar y completar la respuesta.
+        3. Data de la empresa, toda la data disponible de la empresa para que generes una respuesta basada en la empresa del usuario
+        Para responder, considera lo siguiente: 
+        - Presentar la respuesta y definición de conceptos claves. 
+        - Explicacion detallada de la respuesta, incluyendo datos relevantes. Agrega informacion de la empresa para esto. Es prioridad incluir la informacion de la empresa y personalizar. 
+        - Explicacion con los datos de la empresa. Esta parte es critica, usa de forma detallada la informacion existente de la empresa para explicar y completar la respuesta.
        '''
     )
-    
+    sys_message += get_is_client_string()
+    sys_message += get_complement_sys_msg_client()
     if empresa_data:
         sys_message += f"\nDatos de la empresa: {json.dumps(empresa_data, ensure_ascii=False, indent=2)}"
         

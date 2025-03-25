@@ -54,7 +54,7 @@ def generar_respuesta_general(pregunta: str) -> str:
     respuesta_blog = retriever_correcto.invoke({"query": pregunta_sencilla})
     
     # Prompt para evaluar relevancia
-    relevancia_prompt = f"¿Es esta información relevante para la pregunta '{pregunta}'? Responde 'si' o 'no'.\nInformación: {respuesta_blog}"
+    relevancia_prompt = f"¿Es esta información relevante para la pregunta. No se desvia de la pregunta y aporta. Considera que buscamos un marco contextual que aporte a generar una respuesta mas completa\n Pregunta: '{pregunta}'? Responde 'si' o 'no'.\nInformación: {respuesta_blog}"
     relevancia = chat(relevancia_prompt).content.strip().lower()
     
     # Filtrar según relevancia

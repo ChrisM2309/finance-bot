@@ -17,7 +17,8 @@ from tools.abaco_platform.abaco_client_tool import set_empresa_id, cargar_datos_
 # IMPLEMENTACION UNICAMENTE PARA TESTEO, REQUIERE MAS DESARROLLO
 from is_client import set_is_abaco_client, get_is_abaco_client
 #! AQUI SE DEFINE TODO LO RELACIONADO A CLIENTE O NO CLIENTE
-set_is_abaco_client(True)
+status_cliente = True
+set_is_abaco_client(status_cliente)
 empresa_id = "2-DistribuidoraComercialSur"
 es_cliente = get_is_abaco_client()
 
