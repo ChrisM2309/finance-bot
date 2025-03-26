@@ -11,6 +11,7 @@ from tools.general.preguntas_tool import tool_preguntas, obtener_retriever_corre
 # Importar el chatbot y memoria
 import models.llm_config as llm_config
 chat = llm_config.get_openai_llm()
+simple_chat = llm_config.get_simple_openai_llm()
 get_chat_completion = llm_config.get_chat_completion
 get_client_chat_completion = llm_config.get_client_chat_completion
 
@@ -54,7 +55,8 @@ def generar_respuesta_general(pregunta: str) -> str:
     respuesta_blog = retriever_correcto.invoke({"query": pregunta_sencilla})
     
     # Prompt para evaluar relevancia
-    relevancia_prompt = f"¿Es esta información relevante para la pregunta. No se desvia de la pregunta y aporta. Considera que buscamos un marco contextual que aporte a generar una respuesta mas completa\n Pregunta: '{pregunta}'? Responde 'si' o 'no'.\nInformación: {respuesta_blog}"
+    relevancia_prompt = f"¿Es esta información relevante para la sigueinte pregunta. Considera que no debe desviarse de la pregunta. Debe aportar a la respuesta. Debe funcionar como una guia para una respuesta mas detallada. Debe ser una base conceptual. Considera que debe ser un marco contextual que aporte a generar una respuesta mas completa\n Pregunta: '{pregunta}'? \nResponde exclusivamente 'si' o 'no'.\nInformación: {respuesta_blog}"
+    print("Informacion del blog: ", respuesta_blog)
     relevancia = chat(relevancia_prompt).content.strip().lower()
     
     # Filtrar según relevancia

@@ -27,50 +27,79 @@ if es_cliente == True:
     cargar_datos_empresa_global()
 
 import financebot
+get_agent_temperature = financebot.get_agent_temperature
+set_agent_temperature = financebot.set_agent_temperature
 agente = financebot.get_agent() 
 interaction_history = []
 
+band_regenerar = False
+temperatura_agente = get_agent_temperature()
+def regenerar_true():
+    global band_regenerar
+    band_regenerar = True
+    
+def imprimir_respuesta(respuesta):
+    print("BOT: ", respuesta)
+    # REGENERAR Y FEEDBACK   
+    regenerar_respuesta = input("Regenerar? si o no: ").strip().lower() 
+    if regenerar_respuesta == "si":
+        regenerar_respuesta = True
+    else:
+        regenerar_respuesta = False
+    
+    if regenerar_respuesta:
+        print("inside regenerar if")
+        global temperatura_agente
+        set_agent_temperature(temperatura_agente + 0.3)
+        regenerar_true()
+        return  
+   
+    # Mostrar opciones
+    print("Feedback: 'like', 'dislike'")
+    feedback = input("Retroalimentacion: ").strip().lower()
+    #! ESTA VARIABLE DEBE CAMBIARSE PARA SER TOMADA DEL MENSAJE DE LA API
+    # Si no tomo ninguna opcion 
+    if feedback not in ['like', 'dislike']:
+        return
+    # Like y Dislike
+    if feedback in ["like", "dislike"]:
+        last_interaction = interaction_history[-1]
+        last_input = last_interaction["input"]
+        last_response = last_interaction["response"] 
+        # Funcion de save_feedback en llm_config
+        save_feedback(last_input, last_response, feedback)
+        print(f"Retroalimentacion guardada: {feedback}")
+    
+    
+    
 def run_chatbot(): 
     print(f"from main, ES CLIENTE ABACO: {es_cliente}")
     print("Bienvenido al Chatbot Financiero de Abaco. ¿En qué puedo ayudarte?\nEscribe 'salir' para terminar.")
+    global band_regenerar
+    global temperatura_agente
+    band_regenerar = False
     while True: 
-        user_input = input("User: ").strip()
-        if user_input.lower() == 'salir':
-            break
+        if band_regenerar == True:
+            user_input = user_input
+            response = agente.run(user_input)
+            set_agent_temperature(temperatura_agente)
+            band_regenerar = False
+        else: 
+            user_input = input("User: ").strip()
+            if user_input.lower() == 'salir':
+                break
+            response = agente.run(user_input)
         
+       
         # Ejecutar agente 
-        response = agente.run(user_input)
+        
+        # NUEVA FUNCION
         interaction_history.append({"input": user_input, "response": response})
+        print(temperatura_agente)
+        imprimir_respuesta(response)
+        # Mostrar respuesta             
 
-        # Mostrar respuesta 
-        print(f"Bot: {response}")
-        
-        # Mostrar opciones
-        print("Opciones: 'like', 'dislike', 'regenerar'")
-        feedback = input("Retroalimentacion: ").strip().lower()
-        #! ESTA VARIABLE DEBE CAMBIARSE PARA SER TOMADA DEL MENSAJE DE LA API
-        
-        # Si no tomo ninguna opcion 
-        if feedback not in ['like', 'dislike', 'regenerar']:
-            continue
-        # Si el usuario decidio regenerar 
-        if feedback == "regenerar":
-            new_input = f"Aumenta temperatura y creatividad\nResponde: {user_input}"
-            new_response = agente.run(new_input)
-            interaction_history[-1]["response"] = new_response
-            print(f"Bot: {new_response}")
-            #Mostrar nuevo feedback 
-            print("Opciones: 'like' o 'dislike'")
-            feedback = input("Retroalimentacion: ").strip().lower()
 
-        # Like y Dislike
-        if feedback in ["like", "dislike"]:
-            last_interaction = interaction_history[-1]
-            last_input = last_interaction["input"]
-            last_response = last_interaction["response"] 
-            # Funcion de save_feedback en llm_config
-            save_feedback(last_input, last_response, feedback)
-            print(f"Retroalimentacion guardada: {feedback}")
             
             
 if __name__ == "__main__":

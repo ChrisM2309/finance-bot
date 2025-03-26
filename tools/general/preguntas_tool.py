@@ -51,9 +51,9 @@ determinar_complejidad_chain = LLMChain(llm=chat, prompt=determinar_complejidad_
 
 # CONFIGURACION DE RETRIEVER
 RETRIEVER_CONFIG = {
-    "simple": {"k": 3, "chain_type": "stuff", "use_multi_query": False},
+    "simple": {"k": 4, "chain_type": "stuff", "use_multi_query": False},
     "moderada": {"k": 5, "chain_type": "stuff", "use_multi_query": False},
-    "compleja": {"k": 3, "chain_type": "map_reduce", "use_multi_query": True}
+    "compleja": {"k": 5, "chain_type": "map_reduce", "use_multi_query": True}
 }
 
 #PROMPT PARA EL MULTI_RETRIEVER

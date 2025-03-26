@@ -1,4 +1,5 @@
 is_abaco_client = False
+client_id = None
 
 def set_is_abaco_client(state):
     global is_abaco_client
@@ -16,3 +17,6 @@ def get_is_client_string():
         base_str += "NO CLIENTE DE ABACO"
     base_str += "\n"
     return base_str
+
+
+

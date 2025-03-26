@@ -29,7 +29,7 @@ dimension = 1536
 index = faiss.IndexFlatL2(dimension)
 
 # INFORMACION SI ES CLIENTE 
-from is_client import get_is_client_string
+from is_client import get_is_client_string, get_is_abaco_client
 # FECHA PARA CONTEXTO
 from datetime import datetime
 # Consideraciones estandar para el sys message 
@@ -73,6 +73,8 @@ def get_complement_sys_msg_client():
 
     standard_msg = '''
 
+    IMPORTANTE: USA LA INFORMACION DISPONIBLE, CONSULTA LA FECHA ACTUAL Y USALO PARA CUALQUIER CONSULTA QUE ESTE RELACIONADA CON EL TIEMPO O FECHAS. Solo toma informacion en las fechas disponibles.
+    
     No repitas la consulta del usuario.
 
     No menciones que la pregunta del usuario puede tener un error tipográfico a menos que sea muy claro. Considera la pregunta original del usuario como la fuente de verdad.
@@ -81,13 +83,7 @@ def get_complement_sys_msg_client():
 
     Comienza con una sección de respuesta directa (sin mencionar respuesta directa en el título o en cualquier parte). Luego, presenta una sección detallada con toda la respuesta en estilo de puntos breves y que incluya todos los detalles. Termina con una conclusion y sugiere posible continuación a la pregunta. 
 
-    La sección de respuesta directa debe abordar la consulta del usuario con matices basados en incertidumbre o complejidad. Incluye hechos clave que el usuario probablemente espera, y considera agregar detalles inesperados (evita usar detalle sorprendente en el título; describe lo inesperado). Escrita para un público conocedor, la respuesta debe ser clara y fácil de seguir.
-
     Usa encabezados y tablas si mejoran la organización. Procura incluir al menos una tabla (o varias tablas) a menos que se indique lo contrario.
-
-    La respuesta debe ser completa y autónoma, ya que el usuario no tendrá acceso al rastro de pensamiento.
-    
-    Considera que te diriges a conocedores del negocio. 
     
     Prioriza usar tablas y recursos que complementen. 
     
@@ -112,20 +108,24 @@ def prepare_fine_tunning_data():
         
     with open(TRAINING_FILE, "a", encoding="utf-8") as f:
         for entry in data:
+            if entry["is_client"] == "True":
+                sys_msg = "Eres un asesor financiero experto para PYMES, desarrollado por Abaco para sus clientes. Tienes acceso a su informacion financieras y siempre brindas respuestas detalladas"
+            else:
+                sys_msg = "Eres un asesor financiero experto para PYMES, desarrollado por Abaco para no clientes. Siempre brindas respuestas detalladas a las preguntas"
             if entry["feedback"] == "like":
                 f.write(json.dumps({
                         "messages": [
-                            {"role": "system", "content": "Eres un asesor financiero experto para PYMES."},
+                            {"role": "system", "content": sys_msg},
                             {"role": "user", "content": entry["prompt"]},
-                            {"role": "assistant", "content": entry["response"]}
+                            {"role": "assistant", "content": "[IMITA ESTA ESTRUCTURA DE RESPUESTA:] " + entry["response"]}
                         ]
                     }, ensure_ascii=False) + "\n")
             elif entry["feedback"] == "dislike":
                 f.write(json.dumps({
                     "messages": [
-                        {"role": "system", "content": "Eres un asesor financiero experto para PYMES."},
+                        {"role": "system", "content": sys_msg},
                         {"role": "user", "content": entry["prompt"]},
-                        {"role": "assistant", "content": "[EVITAR ESTA RESPUESTA:]" + entry["response"]}
+                        {"role": "assistant", "content": "[EVITAR ESTA RESPUESTA:] " + entry["response"]}
                     ]
                 }, ensure_ascii=False) + "\n")
                 
@@ -164,9 +164,10 @@ def save_feedback(prompt, response, feedback):
                     data = json.loads(content)
         except (json.JSONDecodeError, ValueError):
             data = []
-                
+            
+    is_client = get_is_abaco_client()
     embedding = get_embedding(prompt).tolist()
-    data.append({"prompt": prompt, "response": response, "feedback": feedback, "embedding": embedding})
+    data.append({"prompt": prompt, "response": response, "feedback": feedback, "is_client": is_client, "embedding": embedding})
     
     # INSERTAR EN FEEDBACK_FILE 
     with open(FEEDBACK_FILE, 'w', encoding= 'utf-8') as file: 
@@ -181,15 +182,17 @@ def get_similar_feedback(prompt, k = 3):
     if not os.path.exists(FEEDBACK_FILE):
         return {"likes": [], "dislikes": []}
     
-    data = []
+    base_data = []
     try: 
         with open(FEEDBACK_FILE, 'r', encoding = 'utf-8') as file:
             content = file.read().strip()
             if content:
-                data = json.loads(content)
+                base_data = json.loads(content)
     except (json.JSONDecodeError, ValueError):
         return {"likes": [], "dislikes": []}
-    
+
+    is_client = get_is_abaco_client()    
+    data = [entry for entry in base_data if entry.get("is_client", False) == is_client]    
     if not data:
         return {"likes": [], "dislikes": []}
     
@@ -204,17 +207,18 @@ def get_similar_feedback(prompt, k = 3):
     likes = []
     dislikes = []
     for idx in indices[0]:
-        entry = data[idx]
-        if entry["feedback"] == "like":
-            likes.append(entry["response"])
-        elif entry["feedback"] == "dislike":
-            dislikes.append(entry["response"])
+        if idx < len(data):  # Verificar que el índice sea válido
+            entry = data[idx]
+            if entry["feedback"] == "like":
+                likes.append(entry["response"])
+            elif entry["feedback"] == "dislike":
+                dislikes.append(entry["response"])
     
     return {"likes": likes[:k], "dislikes": dislikes[:k]}
 
 
 # Función para usar chat completions directamente
-def get_chat_completion(prompt, context=None, chat_history=None, temperature=0.5, max_tokens=2000):
+def get_chat_completion(prompt, context=None, chat_history=None, temperature=0.5, max_tokens=2500):
     """-
     Genera una respuesta usando el endpoint /v1/chat/completions con el modelo ajustado.
     
@@ -231,11 +235,15 @@ def get_chat_completion(prompt, context=None, chat_history=None, temperature=0.5
     sys_message = '''
     Eres un asesor financiero experto que siempre brinda respuestas detalladas, desarrollado por la fintech Ábaco, enfocado en PYMES de Centroamérica. 
     Sigue este formato al responder: 
-    1) Respuesta general explicada en terminos simplese. Agrega los conceptos clave. 
-    2) Explica la respuesta y su importancia. 
-    3) Detalla pasos concretos para abordarlo, numerados y separados. 
-    4) Incluye un ejemplo práctico. 
-    5) Concluye con una recomendación, Ábaco puede ayudar y un seguimiento a la pregunta.
+    - Respuesta general explicada en terminos simplese. Agrega los conceptos clave. 
+    - Explica la respuesta y su importancia. 
+    - Detalla pasos concretos para abordarlo, numerados y separados. 
+    - Concluye con una recomendación o ejemplo, Ábaco puede ayudar y un seguimiento a la pregunta.
+    Considera lo siguiente: 
+        - Presenta la respuesta y elementos clave que la complementen. 
+        - Agrega ejemplos y datos relevantes.
+        - SEPARA EN SECCIONES ORDENADAS, LOGICAS. Incluye TABLAS para mejorar LA ORGANIZACION DE LA INFORMACION NUMERICA. Usa LISTAS para LINEAS DE TEXTO O CONCEPTOS.
+        - CONSIDERA LA FECHA Y HORA ACTUAL PARA TODO PROCESO QUE PREGUNTE POR FECHAS O PERIODOS DE TIEMPO ESPECIFICOS
     '''
     sys_message += get_complement_sys_msg_client()
     sys_message += get_is_client_string()
@@ -278,7 +286,7 @@ def get_chat_completion(prompt, context=None, chat_history=None, temperature=0.5
         raise Exception(f"GetCompletion -- Error al procesar la consulta: {str(e)}")
     
 #! FUNCION PARA LOS COMPLETIONS DEL CLIENTE 
-def get_client_chat_completion(prompt, general_answer=None, chat_history=None, empresa_data=None, temperature=0.5, max_tokens=2000):
+def get_client_chat_completion(prompt, general_answer=None, chat_history=None, empresa_data=None, temperature=0.5, max_tokens=2500):
     """-
     Genera una respuesta para clients usando chat completion con el modelo ajustado.
     
@@ -301,10 +309,13 @@ def get_client_chat_completion(prompt, general_answer=None, chat_history=None, e
         2. Informacion de la web de Abaco que puede guiarte en la respuesta (opcional)
         3. Data de la empresa, toda la data disponible de la empresa para que generes una respuesta basada en la empresa del usuario
         Para responder, considera lo siguiente: 
-        - Presentar la respuesta y definición de conceptos claves. 
-        - Explicacion detallada de la respuesta, incluyendo datos relevantes. Agrega informacion de la empresa para esto. Es prioridad incluir la informacion de la empresa y personalizar. 
-        - Explicacion con los datos de la empresa. Esta parte es critica, usa de forma detallada la informacion existente de la empresa para explicar y completar la respuesta.
-       '''
+        - Presenta la respuesta y elementos clave que la complementen. 
+        - La respuesta debe ser detallada. Usar exactamente la informacion disponible de la empresa. 
+        - Agrega ejemplos y datos relevantes.
+        - Indica que conoces la empresa, incluye referencias a la informacion. Genera personalizacion. 
+        - SEPARA EN SECCIONES ORDENADAS, LOGICAS. Incluye TABLAS para mejorar LA ORGANIZACION DE LA INFORMACION NUMERICA. Usa LISTAS para LINEAS DE TEXTO O CONCEPTOS.
+        - CONSIDERA LA FECHA Y HORA ACTUAL PARA TODO PROCESO QUE PREGUNTE POR FECHAS O PERIODOS DE TIEMPO ESPECIFICOS
+        '''
     )
     sys_message += get_is_client_string()
     sys_message += get_complement_sys_msg_client()

@@ -70,3 +70,10 @@ def get_agent():
 
 def get_agent_tools():
     return agent_tools
+
+def get_agent_temperature():
+    return agente.agent.llm_chain.llm.temperature
+
+def set_agent_temperature(nueva_temperatura):
+    agente.agent.llm_chain.llm.temperature = nueva_temperatura
+    
