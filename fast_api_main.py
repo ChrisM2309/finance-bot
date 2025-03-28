@@ -17,7 +17,7 @@ from is_client import set_is_abaco_client, get_is_abaco_client
 
 #prepare_fine_tunning_data()
 import financebot
-agente = financebot.get_agent() 
+agente = financebot.get_agent()
 get_agent_temperature = financebot.get_agent_temperature
 set_agent_temperature = financebot.set_agent_temperature
 
@@ -27,6 +27,7 @@ app = FastAPI()
 
 temperatura_agente = get_agent_temperature()
 band_regenerar = False
+status_cliente = False
 
 def regenerar_true():
     global band_regenerar
@@ -48,15 +49,20 @@ async def process_text(data: RequestData):
     global status_cliente, empresa_id
 
     status_cliente = data.status_cliente
-    set_is_abaco_client(status_cliente)
+    if (status_cliente != get_is_abaco_client()):
+        print("El estado del cliente ha cambiado.")
+        set_is_abaco_client(status_cliente)
+        
+    agente = financebot.get_agent()
 
-    empresa_id = data.empresa_id
-
-    es_cliente = get_is_abaco_client()
-    if es_cliente:
+    if status_cliente:
+        print("El cliente es un cliente de Abaco.")
+        empresa_id = data.empresa_id
         set_empresa_id(empresa_id)
         cargar_datos_empresa_global()
 
+    es_cliente = get_is_abaco_client()
+    
     if band_regenerar:
         response = agente.run(data.text)
         set_agent_temperature(temperatura_agente)
