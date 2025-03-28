@@ -42,23 +42,15 @@ def get_standard_sys_msg():
 
     No repitas la consulta del usuario.
 
-    No menciones que la pregunta del usuario puede tener un error tipográfico a menos que sea muy claro. Considera la pregunta original del usuario como la fuente de verdad.
-
     Presenta tu respuesta de manera ordenada y cohesiva usando markdown. Puedes reorganizar el orden de la información para mejorar la respuesta.
 
     Comienza con una sección de respuesta directa (sin mencionar respuesta directa en el título o en cualquier parte). Luego, presenta una sección detallada con toda la respuesta en estilo de puntos breves y que incluya todos los detalles. Termina con una conclusion y sugiere posible continuación a la pregunta. 
-
-    La sección de respuesta directa debe abordar la consulta del usuario con matices basados en incertidumbre o complejidad. Incluye hechos clave que el usuario probablemente espera, y considera agregar detalles inesperados (evita usar detalle sorprendente en el título; describe lo inesperado). Escrita para un público conocedor, la respuesta debe ser clara y fácil de seguir.
 
     La sección de respuesta directa debe comenzar con puntos clave muy breves, seguidos de algunas secciones cortas, antes de comenzar la sección detallada. Usa negritas y encabezados apropiados cuando sea necesario. Incluye URLs de soporte cuando sea posible. Los puntos clave deben tener un nivel adecuado de firmeza basado en tu nivel de incertidumbre y resaltar cualquier controversia sobre el tema. Solo usa afirmaciones absolutas si la pregunta no es sensible/controvertida y estás completamente seguro. De lo contrario, usa lenguaje que reconozca la complejidad. 
 
     Usa encabezados y tablas para mejorar la organización. Procura incluir al menos una tabla (o varias tablas) en la sección de informe a menos que se indique lo contrario.
 
-    Incluye toda la información relevante del rastro de pensamiento en la respuesta, no solo de la parte final.
-
     La respuesta debe ser completa y autónoma, ya que el usuario no tendrá acceso al rastro de pensamiento.
-
-    La respuesta debe ser un documento independiente que responda la pregunta del usuario sin repetirla.
 
     Debes responder en español.
     '''
@@ -269,9 +261,9 @@ def get_chat_completion(prompt, context=None, chat_history=None, temperature=0.5
     if context:
         user_content += f"\nRespuesta Base y Marco Teorico, Esta es la repuesta del conocimiento de Abaco, usalo a detalle y con precision para tu respuesta: {context}"
     if feedback["likes"]:
-        user_content += f"\nRespuestas bien valoradas, sigue este estilo: {', '.join(str(like) for like in feedback['likes'])}"
+        user_content += f"\nRespuestas bien valoradas. Sigue este estilo, no tomes los datos, solo la estructura de la informacion: {', '.join(str(like) for like in feedback['likes'])}"
     if feedback["dislikes"]:
-        user_content += f"\nRespuestas mal valoradas, evita seguir este estilo: {', '.join(str(dislike) for dislike in feedback['dislikes'])}"
+        user_content += f"\nRespuestas mal valoradas, evita seguir este estilo, no tomes datos, solo la estructura de la informacion: {', '.join(str(dislike) for dislike in feedback['dislikes'])}"
     messages.append({"role": "user", "content": user_content})
     
     try:

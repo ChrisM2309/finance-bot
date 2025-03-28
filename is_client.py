@@ -16,6 +16,7 @@ def get_is_client_string():
     else: 
         base_str += "NO CLIENTE DE ABACO"
     base_str += "\n"
+    print (base_str)
     return base_str
 
 
