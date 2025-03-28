@@ -18,8 +18,15 @@ from tools.abaco_platform.abaco_client_tool import set_empresa_id, cargar_datos_
 from is_client import set_is_abaco_client, get_is_abaco_client
 #! AQUI SE DEFINE TODO LO RELACIONADO A CLIENTE O NO CLIENTE
 status_cliente = True
+# ESTA VARIABLE DEFINE EL COMPORTAMIENTO, SI ES CLIENTE O NO
 set_is_abaco_client(status_cliente)
+# AQUI SE DEFINE EL ID DE LA EMPRESA, SI ES CLIENTE
 empresa_id = "2-DistribuidoraComercialSur"
+# HAY 3 EMPRESAS DISPONIBLES
+# 1-TecnologiaInnovadora 
+# 2-DistribuidoraComercialSur
+# 3-ManufacturasIndustriales 
+#! EN EL 3, FALTA EL CASO DE UN CREDITO EN MORA, AGREGAR CONDICIONES ESPECIALES PARA ESTE CASO
 es_cliente = get_is_abaco_client()
 
 if es_cliente == True:
@@ -48,9 +55,9 @@ def imprimir_respuesta(respuesta):
         regenerar_respuesta = False
     
     if regenerar_respuesta:
-        print("inside regenerar if")
         global temperatura_agente
-        set_agent_temperature(temperatura_agente + 0.3)
+        new_temp = temperatura_agente + 0.3
+        set_agent_temperature(new_temp)
         regenerar_true()
         return  
    
@@ -95,7 +102,6 @@ def run_chatbot():
         
         # NUEVA FUNCION
         interaction_history.append({"input": user_input, "response": response})
-        print(temperatura_agente)
         imprimir_respuesta(response)
         # Mostrar respuesta             
 
