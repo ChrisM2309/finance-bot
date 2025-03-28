@@ -3,6 +3,7 @@ from openai import OpenAI as OpenAI
 
 from fastapi import FastAPI
 from pydantic import BaseModel
+import requests
 
 from langchain_community.chat_models import ChatOpenAI
 from langchain_community.llms import OpenAI as OpenAI
@@ -62,20 +63,16 @@ async def process_text(data: RequestData):
         cargar_datos_empresa_global()
 
     es_cliente = get_is_abaco_client()
-    
-    if band_regenerar:
-        response = agente.run(data.text)
-        set_agent_temperature(temperatura_agente)
-        band_regenerar = False
-    else:
-        response = agente.run(data.text)
-    
+
+    response = agente.run(data.text)
     interaction_history.append({"input": data.text, "response": response})
+    
     return ResponseData(response=response)
 
 @app.post("/feedback")
 async def provide_feedback(data: FeedbackData):
-    global temperatura_agente
+    global temperatura_agente, band_regenerar
+    global status_cliente, empresa_id
     
     if data.interaction_id >= len(interaction_history):
         return {"error": "Invalid interaction_id"}
@@ -88,7 +85,12 @@ async def provide_feedback(data: FeedbackData):
         new_temp = temperatura_agente + 0.3
         set_agent_temperature(new_temp)
         regenerar_true()
-        new_response = agente.run(user_input)
+
+        new_response =  agente.run(user_input)
+
+        set_agent_temperature(temperatura_agente)
+        band_regenerar = False
+
         interaction_history[data.interaction_id]["response"] = new_response
         return {"interaction_id": data.interaction_id, "new_response": new_response}
 
