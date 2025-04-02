@@ -28,6 +28,7 @@ else:
     agent_tools = tools_not_client
 
 def get_tools():
+    global tools_abaco, tools_not_client
     es_cliente_abaco = get_is_abaco_client()
     if es_cliente_abaco:
         agent_tools =  tools_abaco
