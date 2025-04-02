@@ -13,7 +13,7 @@ from langchain.prompts import PromptTemplate
 
 # Importar save_feedback
 from models.llm_config import save_feedback, prepare_fine_tunning_data
-from tools.abaco_platform.abaco_client_tool import set_empresa_id, cargar_datos_empresa_global
+from tools.abaco_platform.abaco_client_tool import set_empresa_id, cargar_datos_empresa_global, get_empresa_id
 from is_client import set_is_abaco_client, get_is_abaco_client
 
 #prepare_fine_tunning_data()
@@ -26,9 +26,11 @@ interaction_history = []
 
 app = FastAPI()
 
+# Globales
 temperatura_agente = get_agent_temperature()
 band_regenerar = False
 status_cliente = False
+empresa_id_global = get_empresa_id()
 
 def regenerar_true():
     global band_regenerar
@@ -52,23 +54,21 @@ if __name__ == "__main__":
 @app.post("/process", response_model=ResponseData)
 async def process_text(data: RequestData):
     global band_regenerar, temperatura_agente
-    global status_cliente, empresa_id
+    global status_cliente, empresa_id_global
 
     status_cliente = data.status_cliente
     if (status_cliente != get_is_abaco_client()):
         print("El estado del cliente ha cambiado.")
         set_is_abaco_client(status_cliente)
-        
-    agente = financebot.get_agent()
+        agente = financebot.get_agent()
 
-    if status_cliente:
-        print("El cliente es un cliente de Abaco.")
-        empresa_id = data.empresa_id
-        set_empresa_id(empresa_id)
+    if (empresa_id_global != data.empresa_id and status_cliente):
+        print("El id de la empresa ha cambiado.")
+        set_empresa_id(data.empresa_id)
+        empresa_id_global = data.empresa_id
         cargar_datos_empresa_global()
-
-    es_cliente = get_is_abaco_client()
-
+        agente = financebot.get_agent()
+        
     response = agente.run(data.text)
     interaction_history.append({"input": data.text, "response": response})
     
@@ -77,7 +77,7 @@ async def process_text(data: RequestData):
 @app.post("/feedback")
 async def provide_feedback(data: FeedbackData):
     global temperatura_agente, band_regenerar
-    global status_cliente, empresa_id
+    global status_cliente, empresa_id_global
     
     if data.interaction_id >= len(interaction_history):
         return {"error": "Invalid interaction_id"}
