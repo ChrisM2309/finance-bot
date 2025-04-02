@@ -92,6 +92,8 @@ def get_executor():
     return custom_executor
 
 def get_agent():
+    print("TOMANDO AGENTE") 
+    print(get_is_client_string()) 
     return get_executor()
 
 def get_agent_temperature():
