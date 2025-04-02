@@ -30,9 +30,10 @@ else:
 def get_tools():
     global tools_abaco, tools_not_client
     es_cliente_abaco = get_is_abaco_client()
+    agent_tools = []
     if es_cliente_abaco:
-        agent_tools =  tools_abaco
+        agent_tools.append(tool_abaco_client)
     else:
-        agent_tools = tools_not_client
+        agent_tools.append(tool_preguntas)
     return agent_tools
 
