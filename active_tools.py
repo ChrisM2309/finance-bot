@@ -14,19 +14,10 @@ tool_preguntas = preguntas_tool.tool_preguntas
 tools_not_client.append(tool_preguntas)
 
 #* Tools de la plataforma de Abaco
-tools_abaco = []
-if es_cliente_abaco:
-    from tools.abaco_platform.abaco_client_tool import tool_abaco_client
-    tools_abaco.append(tool_abaco_client)
+from tools.abaco_platform.abaco_client_tool import tool_abaco_client
 
 #! CONFIGURAR AL AGENTE 
-# Lista de herramientas
-
-if es_cliente_abaco:
-    agent_tools =  tools_abaco
-else:
-    agent_tools = tools_not_client
-
+# Lista de herramientas para el agente
 def get_tools():
     global tools_abaco, tools_not_client
     es_cliente_abaco = get_is_abaco_client()
