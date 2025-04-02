@@ -10,6 +10,7 @@ from langchain_community.llms import OpenAI as OpenAI
 from langchain.memory import ConversationBufferMemory
 from langchain.chains import LLMChain, SimpleSequentialChain
 from langchain.prompts import PromptTemplate
+from fastapi.middleware.cors import CORSMiddleware
 
 # Importar save_feedback
 from models.llm_config import save_feedback, prepare_fine_tunning_data
@@ -26,11 +27,21 @@ interaction_history = []
 
 app = FastAPI()
 
+# Configure CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 # Globales
 temperatura_agente = get_agent_temperature()
 band_regenerar = False
 status_cliente = False
 empresa_id_global = get_empresa_id()
+
 
 def regenerar_true():
     global band_regenerar
@@ -55,6 +66,8 @@ if __name__ == "__main__":
 async def process_text(data: RequestData):
     global band_regenerar, temperatura_agente
     global status_cliente, empresa_id_global
+    global agente
+    global interaction_history
 
     status_cliente = data.status_cliente
     if (status_cliente != get_is_abaco_client()):
@@ -71,8 +84,8 @@ async def process_text(data: RequestData):
         
     response = agente.run(data.text)
     interaction_history.append({"input": data.text, "response": response})
-    
-    return ResponseData(response=response)
+
+    return ResponseData(response=f"{response}, {status_cliente}, {empresa_id_global}")
 
 @app.post("/feedback")
 async def provide_feedback(data: FeedbackData):
