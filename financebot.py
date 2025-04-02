@@ -65,6 +65,7 @@ agente = initialize_agent(
 def reiniciar_agente():
 # Inicializar el agente
     cur_tools = get_agent_tools()
+    memory.clear()  # Limpiar la memoria antes de reiniciar el agente 
     agente = initialize_agent(
         tools= cur_tools,
         llm=agent_model,
