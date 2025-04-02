@@ -85,7 +85,7 @@ async def process_text(data: RequestData):
     response = agente.run(data.text)
     interaction_history.append({"input": data.text, "response": response})
 
-    return ResponseData(response=f"{response}, {status_cliente}, {empresa_id_global}")
+    return ResponseData(response=f"{response}")
 
 @app.post("/feedback")
 async def provide_feedback(data: FeedbackData):
